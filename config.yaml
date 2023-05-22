@@ -1,0 +1,6 @@
+name: alps
+clusters:
+  - hohgant
+  - clariden
+  - balfrin
+  - pilatus
