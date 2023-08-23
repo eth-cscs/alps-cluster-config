@@ -1,4 +1,9 @@
 packages:
+  # patchelf v0.18 leads to errors when it was used to set RPATHS
+  #   ELF load command address/offset not properly aligned
+  # c.f.  https://github.com/NixOS/patchelf/issues/492
+  patchelf:
+    require: "@:0.17"
   libfabric:
     buildable: false
     externals:
