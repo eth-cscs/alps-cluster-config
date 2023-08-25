@@ -1,0 +1,26 @@
+packages:
+  # patchelf v0.18 leads to errors when it was used to set RPATHS
+  #   ELF load command address/offset not properly aligned
+  # c.f.  https://github.com/NixOS/patchelf/issues/492
+  patchelf:
+    require: "@:0.17"
+  libfabric:
+    buildable: false
+    externals:
+    - spec: libfabric@1.15.2.0
+      prefix: /opt/cray/libfabric/1.15.2.0/
+  slurm:
+    buildable: false
+    externals:
+    - spec: slurm@20-11-9
+      prefix: /usr
+  rdma-core:
+    buildable: false
+    externals:
+    - spec: rdma-core@31.0
+      prefix: /usr
+  xpmem:
+    buildable: false
+    externals:
+    - spec: xpmem@2.4.4
+      prefix: /opt/cray/xpmem/2.4.4-2.3_13.8__gff0e1d9.shasta
