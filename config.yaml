@@ -1,6 +1,8 @@
 name: alps
 clusters:
-  - hohgant
-  - clariden
   - balfrin
+  - clariden
+  - eiger
+  - hohgant
   - pilatus
+  - vial
