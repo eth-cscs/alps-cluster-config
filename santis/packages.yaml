@@ -4,6 +4,11 @@ packages:
   # c.f.  https://github.com/NixOS/patchelf/issues/492
   patchelf:
     require: "@:0.17"
+  xpmem:
+    buildable: false
+    externals:
+    - spec: xpmem@2.8.2
+      prefix: /opt/cray/xpmem/2.8.2-1.0_3.5__g84a27a5.shasta/
   libfabric:
     buildable: false
     externals:
