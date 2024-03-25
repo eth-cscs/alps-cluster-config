@@ -18,4 +18,4 @@ packages:
     buildable: false
     externals:
     - spec: xpmem@2.6.2
-      prefix: /opt/cray/xpmem/2.6.2-2.5_2.36__gd067c3f.shasta
+      prefix: /opt/cray/xpmem/default
