@@ -14,3 +14,8 @@ packages:
     externals:
     - spec: libfabric@1.15.2.0
       prefix: /opt/cray/libfabric/1.15.2.0/
+  slurm:
+    buildable: false
+    externals:
+    - spec: slurm@23-02-6
+      prefix: /usr
