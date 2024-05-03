@@ -81,8 +81,9 @@ class CrayGtl(Package):
         # Those rpaths are already set in the build environment, so
         # let's just retrieve them.
         pkgs = os.getenv("SPACK_RPATH_DIRS", "").split(":")
+        pkgs_store = os.getenv("SPACK_STORE_RPATH_DIRS", "").split(":")
         compilers = os.getenv("SPACK_COMPILER_IMPLICIT_RPATHS", "").split(":")
-        return ":".join([p for p in pkgs + compilers if p])
+        return ":".join([p for p in pkgs + compilers + pkgs_store if p])
 
     def should_patch(self, file):
         # Returns true if non-symlink ELF file.
