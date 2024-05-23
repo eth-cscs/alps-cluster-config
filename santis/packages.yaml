@@ -19,3 +19,8 @@ packages:
     externals:
     - spec: slurm@23-02-6
       prefix: /usr
+  egl:
+    buildable: false
+    externals:
+    - spec: egl@1.5
+      prefix: /usr
