@@ -12,7 +12,7 @@ packages:
   slurm:
     buildable: false
     externals:
-    - spec: slurm@20-11-9
+    - spec: slurm@23-02-6
       prefix: /usr
   rdma-core:
     buildable: false
@@ -22,5 +22,5 @@ packages:
   xpmem:
     buildable: false
     externals:
-    - spec: xpmem@2.4.4
-      prefix: /opt/cray/xpmem/2.4.4-2.3_13.8__gff0e1d9.shasta
+    - spec: xpmem@2.8.4
+      prefix: /opt/cray/xpmem/2.8.2-1.0_3.9__g84a27a5.shasta
