@@ -11,7 +11,7 @@ from spack.package import *
 
 _versions = {
     "6.1.15": {
-        "Linux-aarch64": "84acb000e42854de97edf4533cf485b73575163582378c7684c15fe3b4cfe11d",
+        "Linux-aarch64": "e8280ca3db700c26c70d13cb13dde63929644d7636ba8fbc4aaa3e088037d2f5",
     },
     "6.1.14": {
         "Linux-aarch64": "763933310db675c3e690c9a121778c2ddc3a0b8672cb718542888e31099e25c7",
