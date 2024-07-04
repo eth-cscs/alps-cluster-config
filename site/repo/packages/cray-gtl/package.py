@@ -131,4 +131,5 @@ class CrayGtl(Package):
         for root, _, files in os.walk(self.prefix):
             for name in files:
                 if name[-3:] == '.pc':
-                    filter_file("@@PREFIX@@", self.prefix, name, string=True)
+                    f = os.path.join(root, name)
+                    filter_file("@@PREFIX@@", self.prefix, f, string=True)
