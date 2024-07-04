@@ -10,6 +10,9 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "8.1.30": {
+        "Linux-aarch64": "88f5dee3714fd97528b6c0922fe9d9801f7c040cefc4e2b2d06a0f2dfdfc2a55",
+    },
     "8.1.29": {
         "Linux-aarch64": "2fc5d1f5743f9cecc0b5dbf13355c25014f96db2386b5c2c2d8495a57b279381",
     },
@@ -79,6 +82,7 @@ class CrayMpich(Package):
         "8.1.27",
         "8.1.28",
         "8.1.29",
+        "8.1.30",
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
@@ -176,6 +180,13 @@ class CrayMpich(Package):
         filter_file(
             "@@GTL_LIBRARY@@", gtl_library, self.prefix.bin.mpifort, string=True
         )
+
+    @run_after("install")
+    def fixup_pkgconfig(self):
+        for root, _, files in os.walk(self.prefix):
+            for name in files:
+                if name[-3:] == '.pc':
+                    filter_file("@@PREFIX@@", self.prefix, name, string=True)
 
     @property
     def headers(self):

@@ -10,6 +10,9 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "8.1.30": {
+        "Linux-aarch64": "e240114b97d993d3e30227bd564c3b7eaaaf353a0bde73d64ea0e586737a4f7f",
+    },
     "8.1.29": {
         "Linux-aarch64": "321bc3bc3c17f38d199e0ccae87cc931f69ca58238385f1e6a6165a2fbe94a71",
     },
@@ -122,3 +125,10 @@ class CrayGtl(Package):
                 if "@8.1.27+cuda" in self.spec:
                     patchelf("--add-needed", "libcudart.so", f, fail_on_error=False)
                     patchelf("--add-needed", "libcuda.so", f, fail_on_error=False)
+
+    @run_after("install")
+    def fixup_pkgconfig(self):
+        for root, _, files in os.walk(self.prefix):
+            for name in files:
+                if name[-3:] == '.pc':
+                    filter_file("@@PREFIX@@", self.prefix, name, string=True)
