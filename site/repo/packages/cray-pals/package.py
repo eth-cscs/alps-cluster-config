@@ -11,8 +11,8 @@ from spack.package import *
 
 _versions = {
     "1.3.2": {
-        "Linux-aarch64": "f7b97a10cc8dde17e804f79235ab1aa98f83e0c7c178e58d6ca3e9170f89c6da",
-        "Linux-x86_64": "deea749476de0f545b31fcd0912f133d7ba60b84f673e47d8b4b15d5a117254c",
+        "Linux-aarch64": "cdc50b007a6968ed151e95e08afe0d3121db11218dc9fd9fcaf94ccfa889e327",
+        "Linux-x86_64": "5eb6c1d4b92a61dc2f0a7fc67fe2733316969902eb005651fc2b215d1d870752",
     },
     "1.2.12": {
         "Linux-x86_64": "c94d29c09ed650c4e98a236df7ced77f027bdf987919a91a1a1382f704a85bb9"
@@ -88,3 +88,11 @@ class CrayPals(Package):
                 if not self.should_patch(f):
                     continue
                 patchelf("--force-rpath", "--set-rpath", rpath, f, fail_on_error=False)
+
+    @run_after("install")
+    def fixup_pkgconfig(self):
+        for root, _, files in os.walk(self.prefix):
+            for name in files:
+                if name[-3:] == '.pc':
+                    f = os.path.join(root, name)
+                    filter_file("@@PREFIX@@", self.prefix, f, string=True)

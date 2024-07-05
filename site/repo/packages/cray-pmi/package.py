@@ -10,6 +10,10 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "6.1.15": {
+        "Linux-aarch64": "e8280ca3db700c26c70d13cb13dde63929644d7636ba8fbc4aaa3e088037d2f5",
+        "Linux-x86_64": "6f696f5d8f364f659c03c9c836de41749727791a89b6100c4fb6a7dd304b87db",
+    },
     "6.1.14": {
         "Linux-aarch64": "763933310db675c3e690c9a121778c2ddc3a0b8672cb718542888e31099e25c7",
     },
@@ -106,3 +110,11 @@ class CrayPmi(Package):
                 if not self.should_patch(f):
                     continue
                 patchelf("--force-rpath", "--set-rpath", rpath, f, fail_on_error=False)
+
+    @run_after("install")
+    def fixup_pkgconfig(self):
+        for root, _, files in os.walk(self.prefix):
+            for name in files:
+                if name[-3:] == '.pc':
+                    f = os.path.join(root, name)
+                    filter_file("@@PREFIX@@", self.prefix, f, string=True)
