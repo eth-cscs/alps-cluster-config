@@ -12,7 +12,8 @@ from spack.package import *
 _versions = {
     "1.3.2": {
         "Linux-aarch64": "cdc50b007a6968ed151e95e08afe0d3121db11218dc9fd9fcaf94ccfa889e327",
-        "Linux-x86_64": "5eb6c1d4b92a61dc2f0a7fc67fe2733316969902eb005651fc2b215d1d870752",
+        # remove temporarily until issues with linjansson symbols are fixed.
+        #"Linux-x86_64": "5eb6c1d4b92a61dc2f0a7fc67fe2733316969902eb005651fc2b215d1d870752",
     },
     "1.2.12": {
         "Linux-x86_64": "c94d29c09ed650c4e98a236df7ced77f027bdf987919a91a1a1382f704a85bb9"
