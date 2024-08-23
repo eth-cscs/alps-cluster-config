@@ -17,5 +17,5 @@ packages:
   slurm:
     buildable: false
     externals:
-    - spec: slurm@23-02-6
+    - spec: slurm@23-11-7
       prefix: /usr
