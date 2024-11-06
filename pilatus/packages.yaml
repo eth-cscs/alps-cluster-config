@@ -25,4 +25,4 @@ packages:
     buildable: false
     externals:
     - spec: xpmem@2.4.4
-      prefix: /opt/cray/xpmem/default
+      prefix: /usr
