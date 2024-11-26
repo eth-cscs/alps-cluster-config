@@ -6,11 +6,6 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
-  xpmem:
-    buildable: false
-    externals:
-    - spec: xpmem@2.8.2
-      prefix: /usr
   libfabric:
     buildable: false
     externals:
@@ -20,4 +15,9 @@ packages:
     buildable: false
     externals:
     - spec: slurm@23-02-6
+      prefix: /usr
+  xpmem:
+    buildable: false
+    externals:
+    - spec: xpmem@2.9.6
       prefix: /usr
