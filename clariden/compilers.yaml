@@ -8,7 +8,7 @@ compilers:
       fc: /usr/bin/gfortran
     flags: {}
     operating_system: sles15
-    target: x86_64
+    target: aarch64
     modules: []
     environment: {}
     extra_rpaths: []
