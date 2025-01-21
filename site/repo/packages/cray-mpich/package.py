@@ -87,6 +87,7 @@ class CrayMpich(Package):
         "8.1.28",
         "8.1.29",
         "8.1.30",
+        "8.1.31",
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
