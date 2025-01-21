@@ -10,6 +10,9 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "8.1.31": {
+        "Linux-x86_64": "0945ee224a22ceeec42c7af27ae0952807bd8d01ac69b8ece51b68d25afa4d6a",
+    },
     "8.1.30": {
         "Linux-aarch64": "aff06f4e5ed1d56d7e879052ba46fdfba06c20ea9c8a1267ca5114cd06207afb",
         "Linux-x86_64": "5497bbd41c0e1158800c0d4ed894cb7f113a7eb54a4ba0dc2ce47dd23ee6aaa1",
