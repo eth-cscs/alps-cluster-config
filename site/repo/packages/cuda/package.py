@@ -23,7 +23,7 @@ from spack.package import *
 #  - package key must be in the form '{os}-{arch}' where 'os' is in the
 #    format returned by platform.system() and 'arch' by platform.machine()
 
-preferred_ver = "12.8.0"
+preferred_ver = "12.6.0"
 _versions = {
     "12.8.0": {
         "Linux-aarch64": (
