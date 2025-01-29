@@ -21,16 +21,34 @@ from spack.util.prefix import Prefix
 #  - package key must be in the form '{os}-{arch}' where 'os' is in the
 #    format returned by platform.system() and 'arch' by platform.machine()
 _versions = {
+    "25.1": {
+        "Linux-aarch64": (
+            "838b84f89371c83ded0c9eb660e5ff405f1759093b8fc8a67b6d23b8cafb5064",
+            "https://developer.download.nvidia.com/hpc-sdk/25.1/nvhpc_2025_251_Linux_aarch64_cuda_12.6.tar.gz",
+        ),
+        "Linux-x86_64": (
+            "c4b4d69c12983cbba394575acf2809ac610945f08496aba182cdbbee8b6bc9c4",
+            "https://developer.download.nvidia.com/hpc-sdk/25.1/nvhpc_2025_251_Linux_x86_64_cuda_12.6.tar.gz",
+        ),
+    },
     "24.11": {
         "Linux-aarch64": (
             "9a353005fda4844c0ea30688f4a4feac882a25a40f8f7b686af0f793239e1f9e",
             "https://developer.download.nvidia.com/hpc-sdk/24.11/nvhpc_2024_2411_Linux_aarch64_cuda_12.6.tar.gz",
+        ),
+        "Linux-x86_64": (
+            "39408ac062573936e0d41f34530ab065998ef4b85b6bcccb59287d71135a1920",
+            "https://developer.download.nvidia.com/hpc-sdk/24.11/nvhpc_2024_2411_Linux_x86_64_cuda_12.6.tar.gz",
         ),
     },
     "24.9": {
         "Linux-aarch64": (
             "c9e63c37f3d1f874baa54581a757bcbe8cdcef4416d39695ae0f22aaaf2eb585",
             "https://developer.download.nvidia.com/hpc-sdk/24.9/nvhpc_2024_249_Linux_aarch64_cuda_12.6.tar.gz",
+        ),
+        "Linux-x86_64": (
+            "5f8e9d03b6d3102884868cddf7ceacf60f3f21b63b13aee85a0466b3bbc8707c",
+            "https://developer.download.nvidia.com/hpc-sdk/24.9/nvhpc_2024_249_Linux_x86_64_cuda_12.6.tar.gz",
         ),
     },
     "24.7": {
