@@ -125,11 +125,11 @@ class CrayMpich(Package):
     depends_on("libfabric@1.15", type="link", when="~cxi")
 
     # @TODO, pick versions we can reproduce reliably once we are happy with the builds
-    with when=("+cxi"):
+    with when("+cxi"):
         depends_on("libfabric@main")
         depends_on("libcxi@main")
         depends_on("cxi-driver@main")
-        depends_on("cassini-header@main")
+        depends_on("cassini-headers@main")
 
     depends_on("cray-pmi", type="link")
     depends_on("xpmem", type="link")
