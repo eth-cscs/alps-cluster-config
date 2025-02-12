@@ -76,6 +76,7 @@ class CrayMpich(Package):
 
     variant("cuda", default=False)
     variant("rocm", default=False)
+    variant("cxi",  default=False)
 
     # This conflicts with mixed toolchains, whereby the fortran and c/cxx compilers are
     # different. Comment out instead of removing, so that it can be refined to support
@@ -121,7 +122,14 @@ class CrayMpich(Package):
         with when("+rocm"):
             depends_on(f"cray-gtl@{ver} +rocm", type="link", when="@" + ver)
 
-    depends_on("libfabric@1:", type="link")
+    depends_on("libfabric@1.15", type="link", when="~cxi")
+
+    # @TODO, pick versions we can reproduce reliably once we are happy with the builds
+    with when=("+cxi"):
+        depends_on("libfabric@main")
+        depends_on("libcxi@main")
+        depends_on("cxi-driver@main")
+        depends_on("cassini-header@main")
 
     depends_on("cray-pmi", type="link")
     depends_on("xpmem", type="link")
