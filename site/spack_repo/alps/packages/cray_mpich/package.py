@@ -126,7 +126,7 @@ class CrayMpich(Package):
 
     # @TODO, pick versions we can reproduce reliably once we are happy with the builds
     with when("+cxi"):
-        depends_on("libfabric@main")
+        depends_on("libfabric@main fabrics=cxi,rxm,tcp")
         depends_on("libcxi@main")
         depends_on("cxi-driver@main")
         depends_on("cassini-headers@main")
