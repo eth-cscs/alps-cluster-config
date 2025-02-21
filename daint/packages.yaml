@@ -30,3 +30,8 @@ packages:
     externals:
     - spec: slurm@23-11-7
       prefix: /usr
+  egl:
+    buildable: false
+    externals:
+    - spec: egl@1.5
+      prefix: /usr
