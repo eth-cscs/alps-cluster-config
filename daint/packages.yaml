@@ -21,7 +21,7 @@ packages:
     - spec: xpmem@2.9.6
       prefix: /usr
   libfabric:
-    buildable: false
+    buildable: true
     externals:
     - spec: libfabric@1.15.2.0
       prefix: /opt/cray/libfabric/1.15.2.0/
