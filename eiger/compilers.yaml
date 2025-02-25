@@ -1,11 +1,11 @@
 compilers:
 - compiler:
-    spec: gcc@7.5.0
+    spec: gcc@12.3.0
     paths:
-      cc: /usr/bin/gcc
-      cxx: /usr/bin/g++
-      f77: /usr/bin/gfortran
-      fc: /usr/bin/gfortran
+      cc: /usr/bin/gcc-12
+      cxx: /usr/bin/g++-12
+      f77: /usr/bin/gfortran-12
+      fc: /usr/bin/gfortran-12
     flags: {}
     operating_system: sles15
     target: x86_64
