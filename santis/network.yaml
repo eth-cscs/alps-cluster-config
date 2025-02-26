@@ -8,14 +8,3 @@ openmpi:
     version: "5"
     spec: "+internal-pmix fabrics=cma,ofi,xpmem schedulers=slurm +cray-xpmem"
     depends: ["libfabric@1.15"]
-
-packages:
-    libfabric:
-        version: ["git.e08d3161b8038ebfa50a4eb5bf76132e4eaeb137=main"]
-        variants: "fabrics=cxi,rxm,tcp"
-    libcxi:
-        version: ["git.0f3609b5e224636abffc7ceffe6f4e9c83244c08=main"]
-    cxi-driver:
-        version: ["git.c284516fa8d0027b8f84e8ca818e8c6bbe320bd8=main"]
-    cassini-headers:
-        version: ["git.9a8a738a879f007849fbc69be8e3487a4abf0952=main"]
