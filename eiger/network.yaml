@@ -2,9 +2,9 @@ mpi_supported: [cray-mpich, openmpi]
 
 cray-mpich:
     version: "8.1.30"
-    depends: ["libfabric@1.15"]
+    depends: ["libfabric@1.15 fabrics=cxi,rxm,tcp"]
 
 openmpi:
     version: "5"
     spec: "+internal-pmix fabrics=cma,ofi,xpmem schedulers=slurm +cray-xpmem"
-    depends: ["libfabric@1.15"]
+    depends: ["libfabric@1.15 fabrics=cxi,rxm,tcp"]

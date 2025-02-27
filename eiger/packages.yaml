@@ -12,11 +12,6 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
-  libfabric:
-    buildable: true
-    externals:
-    - spec: libfabric@1.15.2.0
-      prefix: /opt/cray/libfabric/1.15.2.0/
   slurm:
     buildable: false
     externals:
@@ -48,10 +43,10 @@ packages:
   libfabric:
     buildable: true
     externals:
-    - spec: libfabric@1.15.2.0
+    - spec: libfabric@1.15.2.0 fabrics=cxi,tcp,udp,rxm,rxd
       prefix: /opt/cray/libfabric/1.15.2.0/
     version: ["git.e08d3161b8038ebfa50a4eb5bf76132e4eaeb137=main"]
-    variants: "fabrics=cxi,rxm,tcp"
+    require: fabrics=cxi,rxm,tcp
 
   libcxi:
     version: ["git.0f3609b5e224636abffc7ceffe6f4e9c83244c08=main"]
