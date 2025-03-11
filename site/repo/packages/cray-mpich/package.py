@@ -10,6 +10,12 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "9.0.0": {
+        "Linux-aarch64": "d3f91487b00d4d9b4edd129b9b12e702c6cec4ce7f0e886e2e6e489846bb0928"
+    },
+    "8.1.32": {
+        "Linux-aarch64": "64ac7a1cf1850a13aaf9b7a080cf955e71ee8388a35d08d283fb4850b6a9ebc3",
+    },
     "8.1.30": {
         "Linux-aarch64": "18f0b403c7ce586926c3f6f7a64e412889f59f596145e17edbe8778a245372a6",
         "Linux-x86_64": "c16b2b113a4af1d10eccc2ba1d1316571baf331ab3904f1fca8d6a767c22720b",
@@ -84,6 +90,8 @@ class CrayMpich(Package):
         "8.1.28",
         "8.1.29",
         "8.1.30",
+        "8.1.32",
+        "9.0.0",
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
@@ -152,9 +160,13 @@ class CrayMpich(Package):
                 patchelf("--force-rpath", "--set-rpath", rpath, f, fail_on_error=False)
                 patchelf("--add-needed", "libxpmem.so", f, fail_on_error=False)
                 if "+cuda" in self.spec:
-                    patchelf("--add-needed", "libmpi_gtl_cuda.so", f, fail_on_error=False)
+                    patchelf(
+                        "--add-needed", "libmpi_gtl_cuda.so", f, fail_on_error=False
+                    )
                 if "+rocm" in self.spec:
-                    patchelf("--add-needed", "libmpi_gtl_hsa.so", f, fail_on_error=False)
+                    patchelf(
+                        "--add-needed", "libmpi_gtl_hsa.so", f, fail_on_error=False
+                    )
 
     @run_after("install")
     def fixup_compiler_paths(self):
@@ -186,7 +198,7 @@ class CrayMpich(Package):
     def fixup_pkgconfig(self):
         for root, _, files in os.walk(self.prefix):
             for name in files:
-                if name[-3:] == '.pc':
+                if name[-3:] == ".pc":
                     f = os.path.join(root, name)
                     filter_file("@@PREFIX@@", self.prefix, f, string=True)
 
