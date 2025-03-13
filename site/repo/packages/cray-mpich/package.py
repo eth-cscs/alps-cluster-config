@@ -71,6 +71,7 @@ class CrayMpich(Package):
 
     variant("cuda", default=False)
     variant("rocm", default=False)
+    variant("cxi",  default=False)
 
     conflicts("+cuda", when="+rocm", msg="Pick either CUDA or ROCM")
 
@@ -98,7 +99,18 @@ class CrayMpich(Package):
         with when("+rocm"):
             depends_on(f"cray-gtl@{ver} +rocm", type="link", when="@" + ver)
 
-    depends_on("libfabric@1:", type="link")
+    # here we put a hard rule to say, use 1.15 when not asking for any new cxi stuff,
+    # but also this forces spack to tuen on +cxi when we supply a newer libfabric.
+    # We could use depends_on("libfabric@1.15:" if we want to allow new libfabric versions
+    # but using the old cxi, however, for now I prefeer this.
+    depends_on("libfabric@1.15", type="link", when="~cxi")
+
+    # @TODO, pick versions we can reproduce reliably once we are happy with the builds
+    with when("+cxi"):
+        depends_on("libfabric@1.22: fabrics=cxi,rxm,tcp")
+        depends_on("libcxi")
+        depends_on("cxi-driver")
+        depends_on("cassini-headers")
 
     depends_on("cray-pmi", type="link")
     depends_on("xpmem", type="link")
