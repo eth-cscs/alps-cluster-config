@@ -11,10 +11,12 @@ from spack.package import *
 
 _versions = {
     "9.0.0": {
-        "Linux-aarch64": "d3f91487b00d4d9b4edd129b9b12e702c6cec4ce7f0e886e2e6e489846bb0928"
+        "Linux-aarch64": "d3f91487b00d4d9b4edd129b9b12e702c6cec4ce7f0e886e2e6e489846bb0928",
+        "Linux-x86_64": "962aaebea6b234a369e376ee986d0a3f5142fc4a66ac8bbee863053f89b42c55",
     },
     "8.1.32": {
         "Linux-aarch64": "64ac7a1cf1850a13aaf9b7a080cf955e71ee8388a35d08d283fb4850b6a9ebc3",
+        "Linux-x86_64": "ce8d8d544f99c97079c04981675a7ca0f53d9b69a482eb7bb1dc09af32cd2313",
     },
     "8.1.30": {
         "Linux-aarch64": "18f0b403c7ce586926c3f6f7a64e412889f59f596145e17edbe8778a245372a6",
