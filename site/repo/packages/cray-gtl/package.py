@@ -67,6 +67,7 @@ class CrayGtl(Package):
             version(
                 ver,
                 sha256=sha,
+                preferred=(ver == "8.1.32"),
                 url=f"https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-gtl-{ver}.{platform.machine()}.tar.gz",
             )
 
