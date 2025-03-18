@@ -10,6 +10,14 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "9.0.0": {
+        "Linux-aarch64": "e326b7800bfef47bdeefd2e3ec85804fc7aff163c0e577ba75bf18e905535b4c",
+        "Linux-x86_64": "0945ee224a22ceeec42c7af27ae0952807bd8d01ac69b8ece51b68d25afa4d6a",
+    },
+    "8.1.32": {
+        "Linux-aarch64": "e326b7800bfef47bdeefd2e3ec85804fc7aff163c0e577ba75bf18e905535b4c",
+        "Linux-x86_64": "0945ee224a22ceeec42c7af27ae0952807bd8d01ac69b8ece51b68d25afa4d6a",
+    },
     "8.1.30": {
         "Linux-aarch64": "aff06f4e5ed1d56d7e879052ba46fdfba06c20ea9c8a1267ca5114cd06207afb",
         "Linux-x86_64": "5497bbd41c0e1158800c0d4ed894cb7f113a7eb54a4ba0dc2ce47dd23ee6aaa1",
@@ -59,6 +67,7 @@ class CrayGtl(Package):
             version(
                 ver,
                 sha256=sha,
+                preferred=(ver == "8.1.32"),
                 url=f"https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-gtl-{ver}.{platform.machine()}.tar.gz",
             )
 
@@ -131,6 +140,6 @@ class CrayGtl(Package):
     def fixup_pkgconfig(self):
         for root, _, files in os.walk(self.prefix):
             for name in files:
-                if name[-3:] == '.pc':
+                if name[-3:] == ".pc":
                     f = os.path.join(root, name)
                     filter_file("@@PREFIX@@", self.prefix, f, string=True)
