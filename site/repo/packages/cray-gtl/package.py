@@ -11,10 +11,12 @@ from spack.package import *
 
 _versions = {
     "9.0.0": {
-        "Linux-aarch64": "e326b7800bfef47bdeefd2e3ec85804fc7aff163c0e577ba75bf18e905535b4c"
+        "Linux-aarch64": "e326b7800bfef47bdeefd2e3ec85804fc7aff163c0e577ba75bf18e905535b4c",
+        "Linux-x86_64": "0945ee224a22ceeec42c7af27ae0952807bd8d01ac69b8ece51b68d25afa4d6a",
     },
     "8.1.32": {
         "Linux-aarch64": "e326b7800bfef47bdeefd2e3ec85804fc7aff163c0e577ba75bf18e905535b4c",
+        "Linux-x86_64": "0945ee224a22ceeec42c7af27ae0952807bd8d01ac69b8ece51b68d25afa4d6a",
     },
     "8.1.30": {
         "Linux-aarch64": "aff06f4e5ed1d56d7e879052ba46fdfba06c20ea9c8a1267ca5114cd06207afb",
@@ -65,6 +67,7 @@ class CrayGtl(Package):
             version(
                 ver,
                 sha256=sha,
+                preferred=(ver == "8.1.32"),
                 url=f"https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-gtl-{ver}.{platform.machine()}.tar.gz",
             )
 
