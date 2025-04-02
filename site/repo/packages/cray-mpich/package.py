@@ -79,6 +79,11 @@ class CrayMpich(Package):
 
     provides("mpi")
 
+    # Need access to compilers to fix compiler paths.
+    depends_on("c")
+    depends_on("cxx")
+    depends_on("fortran")
+
     # Fix up binaries with patchelf.
     depends_on("patchelf", type="build")
 
@@ -117,9 +122,12 @@ class CrayMpich(Package):
 
     def setup_dependent_build_environment(self, env, dependent_spec):
         self.setup_run_environment(env)
-        env.set("MPICH_CC", dependent_spec.package.module.spack_cc)
-        env.set("MPICH_CXX", dependent_spec.package.module.spack_cxx)
-        env.set("MPICH_FC", dependent_spec.package.module.spack_fc)
+        if "c" in dependent_spec:
+            env.set("MPICH_CC", dependent_spec["c"].package.cc)
+        if"cxx" in dependent_spec:
+            env.set("MPICH_CXX", dependent_spec["cxx"].package.cxx)
+        if "fortran" in dependent_spec:
+            env.set("MPICH_FC", dependent_spec["fortran"].package.fortran)
 
     def setup_dependent_package(self, module, dependent_spec):
         self.spec.mpicc = join_path(self.prefix.bin, "mpicc")
