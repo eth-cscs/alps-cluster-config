@@ -75,6 +75,13 @@ class CrayMpich(Package):
     variant("cuda", default=False)
     variant("rocm", default=False)
 
+    requires(
+        "%gcc",
+        "%nvhpc",
+        policy="one_of",
+        msg="GCC and NVHPC are the only supported compilers by the CSCS packaged version.",
+    )
+
     conflicts("+cuda", when="+rocm", msg="Pick either CUDA or ROCM")
 
     provides("mpi")
