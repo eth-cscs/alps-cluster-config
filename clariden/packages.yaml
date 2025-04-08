@@ -7,6 +7,10 @@ packages:
   # c.f.  https://github.com/NixOS/patchelf/issues/492
   cray-mpich:
     buildable: true
+  cray-pmi:
+    buildable: true
+  cray-pals:
+    buildable: true
   patchelf:
     require: "@:0.17"
   libfabric:
