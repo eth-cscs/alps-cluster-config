@@ -594,6 +594,8 @@ with '-Wl,-commons,use_dylibs' and without
 
     variant("cray-xpmem", default=False, description="use cray-xpmem instead of xpmem configure flag (if fabrics=xpmem enabled)")
 
+    variant("continuations", default=False, description="Enable continuations extension")
+
     # Patch to allow two-level namespace on a MacOS platform when building
     # openmpi. Unfortuntately, the openmpi configure command has flat namespace
     # hardwired in. In spack, this only works for openmpi up to versions 4,
@@ -1151,6 +1153,10 @@ with '-Wl,-commons,use_dylibs' and without
         config_args.extend(
             self.enable_or_disable("mpi-thread-multiple", variant="thread_multiple")
         )
+
+        # extensions
+        if "+continuations" in spec:
+            config_args.append("--enable-mpi-ext=continue")
 
         # CUDA support
         # See https://www.open-mpi.org/faq/?category=buildcuda
