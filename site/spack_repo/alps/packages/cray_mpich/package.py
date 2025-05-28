@@ -126,7 +126,7 @@ class CrayMpich(Package):
     # but also this forces spack to tuen on +cxi when we supply a newer libfabric.
     # We could use depends_on("libfabric@1.15:" if we want to allow new libfabric versions
     # but using the old cxi, however, for now I prefeer this.
-    depends_on("libfabric@1.15", type="link", when="~cxi")
+    depends_on("libfabric@1.22", type="link", when="~cxi")
 
     # @TODO, pick versions we can reproduce reliably once we are happy with the builds
     with when("+cxi"):
