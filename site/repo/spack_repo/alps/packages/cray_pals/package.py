@@ -7,52 +7,44 @@ import os
 import platform
 
 import spack.compilers
+from spack_repo.builtin.build_systems.generic import Package
 from spack.package import *
 
 _versions = {
-    "6.1.15": {
-        "Linux-aarch64": "e8280ca3db700c26c70d13cb13dde63929644d7636ba8fbc4aaa3e088037d2f5",
-        "Linux-x86_64": "6f696f5d8f364f659c03c9c836de41749727791a89b6100c4fb6a7dd304b87db",
+    "1.3.2": {
+        "Linux-aarch64": "cdc50b007a6968ed151e95e08afe0d3121db11218dc9fd9fcaf94ccfa889e327",
+        # remove temporarily until issues with linjansson symbols are fixed.
+        #"Linux-x86_64": "5eb6c1d4b92a61dc2f0a7fc67fe2733316969902eb005651fc2b215d1d870752",
     },
-    "6.1.14": {
-        "Linux-aarch64": "763933310db675c3e690c9a121778c2ddc3a0b8672cb718542888e31099e25c7",
+    "1.2.12": {
+        "Linux-x86_64": "c94d29c09ed650c4e98a236df7ced77f027bdf987919a91a1a1382f704a85bb9"
     },
-    "6.1.13": {
-        "Linux-aarch64": "f865f410145a66bb05520c32ee5b64b6dfcb9ae33aace6d3db5f870e4f4714bc",
-        "Linux-x86_64": "217ac554cf84a4c7f08cd149c6a18428e1e3533d73e350fa291b6800895b632e",
+    "1.2.11": {
+        "Linux-x86_64": "e1af09e39d70e28381de806548c6cb29c23abf891a078f46eb71c301a3f0994c"
     },
-    "6.1.12": {
-        "Linux-x86_64": "d1a4bd929b73197823dd9b4bcb3c8ef06d80326297a07291b24e5996b60330a8"
+    "1.2.9": {
+        "Linux-x86_64": "ceec6f99bea9df3f7f657a7df499445e62976064dda3f3e437d61e895ec31601"
     },
-    "6.1.11": {
-        "Linux-x86_64": "5ebcece6a610da02cd41a9a386fd7463ee909bd55e3370d6d372603f90be9afe"
+    "1.2.5": {
+        "Linux-x86_64": "d7269ed8f4deab816e3d4006090ec68b25ccc585200d16728ed9a914baf4d9bf"
     },
-    "6.1.10": {
-        "Linux-x86_64": "f4fbe75c201a171dcfe6ada773a4bf0c606767a0b7a8a76fd19d10852abe1290"
+    "1.2.4": {
+        "Linux-x86_64": "a253939585bad2bb9061b98be6e517f18bda0602ecfd38f75c734a01d12003f2"
     },
-    "6.1.9": {
-        "Linux-x86_64": "8fd4194c6c5167f8b81b1cf9b76341669e40d647d0caecef287be6f0f5d95290"
-    },
-    "6.1.8": {
-        "Linux-x86_64": "6c7e5d3038e26b9d0e82428b25b570d00401a6fc9f2fd3c008f15a253a8e2305"
-    },
-    "6.1.7": {
-        "Linux-x86_64": "574b21bd6f8970521c2bc4f096aced896fec8b749f854272cc7bbb7130ae92d8"
-    },
-    "6.0.17": {
-        "Linux-x86_64": "5f15cd577c6c082888fcf0f76f0f5a898ddfa32370e1c32ffe926912d4d4dad0"
+    "1.2.0": {
+        "Linux-x86_64": "6f5c71aa4dd2f591b899ea693cae7a5319d859f69d8c46b7ee244fed8c094d10"
     },
 }
 
 
-class CrayPmi(Package):
-    """Install cray-pmi"""
+class CrayPals(Package):
+    """Install cray-pals"""
 
-    """Intended to override the main cray-pmi"""
+    """Intended to override the main cray-pals"""
 
     homepage = "https://www.hpe.com/us/en/compute/hpc/hpc-software.html"
-    url = "https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-pmi-6.1.11.tar.gz"
-    maintainers = ["bcumming", "simonpintarelli"]
+    url = "https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-pals-1.2.12.tar.gz"
+    maintainers = ["simonpintarelli"]
 
     for ver, packages in _versions.items():
         key = "{0}-{1}".format(platform.system(), platform.machine())
@@ -61,19 +53,11 @@ class CrayPmi(Package):
             version(
                 ver,
                 sha256=sha,
-                url=f"https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-pmi-{ver}.{platform.machine()}.tar.gz",
+                url=f"https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-pals-{ver}.{platform.machine()}.tar.gz",
             )
 
     # Fix up binaries with patchelf.
     depends_on("patchelf", type="build")
-
-    depends_on("cray-pals@1.3.2", type="link", when="@6.1.13:")
-    depends_on("cray-pals@1.2.12", type="link", when="@6.1.11:6.1.12")
-    depends_on("cray-pals@1.2.11", type="link", when="@6.1.10")
-    depends_on("cray-pals@1.2.9", type="link", when="@6.1.9")
-    depends_on("cray-pals@1.2.5", type="link", when="@6.1.8")
-    depends_on("cray-pals@1.2.4", type="link", when="@6.1.7")
-    depends_on("cray-pals@1.2.0", type="link", when="@6.0.17")
 
     def get_rpaths(self):
         # Those rpaths are already set in the build environment, so
@@ -95,10 +79,6 @@ class CrayPmi(Package):
 
     def install(self, spec, prefix):
         install_tree(".", prefix)
-
-    @property
-    def libs(self):
-        return find_libraries(["libmpi", "libpmi2"], root=self.prefix, shared=True)
 
     @run_after("install")
     def fixup_binaries(self):

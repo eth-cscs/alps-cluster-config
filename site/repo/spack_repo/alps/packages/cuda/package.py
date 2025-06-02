@@ -10,6 +10,7 @@ from glob import glob
 
 import llnl.util.tty as tty
 
+from spack_repo.builtin.build_systems.generic import Package
 from spack.package import *
 
 # FIXME Remove hack for polymorphic versions
