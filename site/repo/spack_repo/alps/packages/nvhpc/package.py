@@ -1,15 +1,16 @@
-# Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
-# Spack Project Developers. See the top-level COPYRIGHT file for details.
+# Copyright Spack Project Developers. See COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 #
 # Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
-
+import glob
+import os.path
 import platform
 
+from spack_repo.builtin.build_systems.compiler import CompilerPackage
 from spack_repo.builtin.build_systems.generic import Package
+
 from spack.package import *
-from spack.util.prefix import Prefix
 
 # FIXME Remove hack for polymorphic versions
 # This package uses a ugly hack to be able to dispatch, given the same
@@ -22,84 +23,98 @@ from spack.util.prefix import Prefix
 #  - package key must be in the form '{os}-{arch}' where 'os' is in the
 #    format returned by platform.system() and 'arch' by platform.machine()
 _versions = {
-    "25.3": {
+    "25.5": {
         "Linux-aarch64": (
-            "15efadfa9c8597208c7b88d52affe6130b3eec3d4d6477778178c725f9b2d72e",
-            "https://developer.download.nvidia.com/hpc-sdk/25.3/nvhpc_2025_253_Linux_aarch64_cuda_12.8.tar.gz",
+            "a1aa824bfdfe0c3541b233fc520757824bbcddbbb3fdf2524fdd15f2feb28347",
+            "https://developer.download.nvidia.com/hpc-sdk/25.5/nvhpc_2025_255_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "57af8b63f6f2724c8e06e9d50727c63ce26eff89cd6f13d3eb3a779f1258fd85",
-            "https://developer.download.nvidia.com/hpc-sdk/25.3/nvhpc_2025_253_Linux_x86_64_cuda_12.8.tar.gz",
+            "9a76cb93225b7f2e31a1894119f6e003a0562f52f43d2ca9a42ac08ecf2946d2",
+            "https://developer.download.nvidia.com/hpc-sdk/25.5/nvhpc_2025_255_Linux_x86_64_cuda_multi.tar.gz",
+        ),
+    },
+    "25.3": {
+        "Linux-aarch64": (
+            "a2b86cf5141c0a9b0925999521693981451a8d2403367c36c46238163be6f2bb",
+            "https://developer.download.nvidia.com/hpc-sdk/25.3/nvhpc_2025_253_Linux_aarch64_cuda_multi.tar.gz",
+        ),
+        "Linux-x86_64": (
+            "e2b2c911478a5db6a15d1fd258a8c4004dbfccf6f32f4132fe142a24fb7e6f8f",
+            "https://developer.download.nvidia.com/hpc-sdk/25.3/nvhpc_2025_253_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "25.1": {
         "Linux-aarch64": (
-            "838b84f89371c83ded0c9eb660e5ff405f1759093b8fc8a67b6d23b8cafb5064",
-            "https://developer.download.nvidia.com/hpc-sdk/25.1/nvhpc_2025_251_Linux_aarch64_cuda_12.6.tar.gz",
+            "0e1d694d54d44559155024d5bab4ca6764eba52d3f27b89f5c252416976e0360",
+            "https://developer.download.nvidia.com/hpc-sdk/25.1/nvhpc_2025_251_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "c4b4d69c12983cbba394575acf2809ac610945f08496aba182cdbbee8b6bc9c4",
-            "https://developer.download.nvidia.com/hpc-sdk/25.1/nvhpc_2025_251_Linux_x86_64_cuda_12.6.tar.gz",
+            "0813791f8363f4c493db7891b00396ce522cb73910279b8f18a440aedda6727c",
+            "https://developer.download.nvidia.com/hpc-sdk/25.1/nvhpc_2025_251_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "24.11": {
         "Linux-aarch64": (
-            "9a353005fda4844c0ea30688f4a4feac882a25a40f8f7b686af0f793239e1f9e",
-            "https://developer.download.nvidia.com/hpc-sdk/24.11/nvhpc_2024_2411_Linux_aarch64_cuda_12.6.tar.gz",
+            "f2f64e5dec5e90dad5e12a31a992172b0aa19abf872ef1c54a1a437c7008eefb",
+            "https://developer.download.nvidia.com/hpc-sdk/24.11/nvhpc_2024_2411_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "39408ac062573936e0d41f34530ab065998ef4b85b6bcccb59287d71135a1920",
-            "https://developer.download.nvidia.com/hpc-sdk/24.11/nvhpc_2024_2411_Linux_x86_64_cuda_12.6.tar.gz",
+            "0c27d66ed0e2d3007d30ac904922a9abf96475197dc0f4dcc6316d235a1dc0c3",
+            "https://developer.download.nvidia.com/hpc-sdk/24.11/nvhpc_2024_2411_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "24.9": {
         "Linux-aarch64": (
-            "c9e63c37f3d1f874baa54581a757bcbe8cdcef4416d39695ae0f22aaaf2eb585",
-            "https://developer.download.nvidia.com/hpc-sdk/24.9/nvhpc_2024_249_Linux_aarch64_cuda_12.6.tar.gz",
+            "8d900f798ef806c64993fd4fedf2c2c812dd1ccdbac2a0d33fabcd0cd36f19cf",
+            "https://developer.download.nvidia.com/hpc-sdk/24.9/nvhpc_2024_249_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "5f8e9d03b6d3102884868cddf7ceacf60f3f21b63b13aee85a0466b3bbc8707c",
-            "https://developer.download.nvidia.com/hpc-sdk/24.9/nvhpc_2024_249_Linux_x86_64_cuda_12.6.tar.gz",
+            "30c493350cf67481e84cea60a3a869e01fa0bcb71df8e898266273fbdf0a7f26",
+            "https://developer.download.nvidia.com/hpc-sdk/24.9/nvhpc_2024_249_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "24.7": {
         "Linux-aarch64": (
-            "8b1659ad182e6b11203f1ab137f1b291da5863778e3786737e95f04fc26a4faf",
-            "https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_Linux_aarch64_cuda_12.5.tar.gz",
+            "256ae392ed961162f3f6dc633498db2b68441103a6192f5d4a1c18fa96e992e7",
+            "https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "baf20427c0057938a04bf2139429c6e9e1bb819de797636244c9696c2dcaf5b0",
-            "https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_Linux_x86_64_cuda_12.5.tar.gz",
+            "bf2094aa2fc5bdbcbf9bfa0fddc1cbed1bfa6e9342980649db2350d9f675f853",
+            "https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "24.5": {
         "Linux-aarch64": (
-            "d0a3bf265d4c08b97d94c83fb2b63b48e538d9f738a6dd0928029043bdeaaef6",
-            "https://developer.download.nvidia.com/hpc-sdk/24.5/nvhpc_2024_245_Linux_aarch64_cuda_12.4.tar.gz",
+            "c52b5ba370e053472cbffb825ba1da5b6abaee93d4e15479ec12c32d6ebc47d5",
+            "https://developer.download.nvidia.com/hpc-sdk/24.5/nvhpc_2024_245_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "392c3315dfe4c8bbd6d77ac9efff7a1af837447cca564cfbeff2d10682d365f5",
-            "https://developer.download.nvidia.com/hpc-sdk/24.5/nvhpc_2024_245_Linux_x86_64_cuda_12.4.tar.gz",
+            "e26c5027ffd83fd9e854946670a97253e950cdbacd4894a6715aea91070042ae",
+            "https://developer.download.nvidia.com/hpc-sdk/24.5/nvhpc_2024_245_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "24.3": {
         "Linux-aarch64": (
-            "6b9edc34b798ccaae39d4af36ff73465ee318ac49e5f96f5c5a2a0d7919fff15",
-            "https://developer.download.nvidia.com/hpc-sdk/24.3/nvhpc_2024_243_Linux_aarch64_cuda_12.3.tar.gz",
+            "6385847de5f8725e5c56d2abf70c90fed5490f2e71a7bd13d3f4ada8720ef036",
+            "https://developer.download.nvidia.com/hpc-sdk/24.3/nvhpc_2024_243_Linux_aarch64_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "4fb8949ba8cef73b28818bd9375c9420ec48fab1c64e71315a7c1984f5329d6b",
-            "https://developer.download.nvidia.com/hpc-sdk/24.3/nvhpc_2024_243_Linux_x86_64_cuda_12.3.tar.gz",
+            "a9fe5ec878e9c4cc332de732c6739f97ac064ce76ad3d0af6d282658d27124cb",
+            "https://developer.download.nvidia.com/hpc-sdk/24.3/nvhpc_2024_243_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "24.1": {
         "Linux-aarch64": (
-            "8d2aafa8769115191708e41e63c647e1c975c241ce4bf6a0badf805f0f5edf1c",
-            "https://developer.download.nvidia.com/hpc-sdk/24.1/nvhpc_2024_241_Linux_aarch64_cuda_12.3.tar.gz",
+            "8c2ce561d5901a03eadce7f07dce5fbc55e8e88c87b74cf60e01e2eca231c41c",
+            "https://developer.download.nvidia.com/hpc-sdk/24.1/nvhpc_2024_241_Linux_aarch64_cuda_multi.tar.gz",
+        ),
+        "Linux-ppc64le": (
+            "e7330eb35e23dcd9b0b3bedc67c0d5443c4fd76b59caa894a76ecb0d17f71f43",
+            "https://developer.download.nvidia.com/hpc-sdk/24.1/nvhpc_2024_241_Linux_ppc64le_cuda_multi.tar.gz",
         ),
         "Linux-x86_64": (
-            "91cdc6f327881f14119e8b6e884d544aafab01c3d569b61831e259c91b4530fc",
-            "https://developer.download.nvidia.com/hpc-sdk/24.1/nvhpc_2024_241_Linux_x86_64_cuda_12.3.tar.gz",
+            "27992e5fd56af8738501830daddc5e9510ebd553326fea8730236fee4f0f1dd8",
+            "https://developer.download.nvidia.com/hpc-sdk/24.1/nvhpc_2024_241_Linux_x86_64_cuda_multi.tar.gz",
         ),
     },
     "23.11": {
@@ -427,7 +442,7 @@ _versions = {
 }
 
 
-class Nvhpc(Package):
+class Nvhpc(Package, CompilerPackage):
     """The NVIDIA HPC SDK is a comprehensive suite of compilers, libraries
     and tools essential to maximizing developer productivity and the
     performance and portability of HPC applications. The NVIDIA HPC
@@ -443,15 +458,19 @@ class Nvhpc(Package):
     homepage = "https://developer.nvidia.com/hpc-sdk"
 
     maintainers("samcmill")
-    tags = ["e4s"]
+    tags = ["e4s", "compiler"]
 
-    skip_version_audit = ["platform=darwin"]
+    skip_version_audit = ["platform=darwin", "platform=windows"]
+
+    redistribute(source=False, binary=False)
 
     for ver, packages in _versions.items():
         key = "{0}-{1}".format(platform.system(), platform.machine())
         pkg = packages.get(key)
         if pkg:
             version(ver, sha256=pkg[0], url=pkg[1])
+
+    depends_on("gcc languages=c,c++,fortran", type="run")
 
     variant("blas", default=True, description="Enable BLAS")
     variant(
@@ -472,12 +491,49 @@ class Nvhpc(Package):
     provides("lapack", when="+lapack")
     provides("mpi", when="+mpi")
 
-    requires("%gcc", msg="nvhpc must be installed with %gcc")
+    provides("c", "cxx")
+    provides("fortran")
+
+    # For now we only detect compiler components
+    # It will require additional work to detect mpi/lapack/blas components
+    compiler_languages = ["c", "cxx", "fortran"]
+    c_names = ["nvc"]
+    cxx_names = ["nvc++"]
+    fortran_names = ["nvfortran"]
+    compiler_version_argument = "--version"
+    compiler_version_regex = r"nv[^ ]* (?:[^ ]+ Dev-r)?([0-9.]+)(?:-[0-9]+)?"
+
+    debug_flags = ["-g", "-gopt"]
+    opt_flags = ["-O", "-O0", "-O1", "-O2", "-O3", "-O4"]
+
+    pic_flag = "-fpic"
+    openmp_flag = "-mp"
+
+    compiler_wrapper_link_paths = {
+        "c": os.path.join("nvhpc", "nvc"),
+        "cxx": os.path.join("nvhpc", "nvc++"),
+        "fortran": os.path.join("nvhpc", "nvfortran"),
+    }
+
+    implicit_rpath_libs = ["libnvc", "libnvf"]
+    stdcxx_libs = ("-c++libs",)
+
+    def _standard_flag(self, *, language, standard):
+        flags = {
+            "cxx": {"11": "--c++11", "14": "--c++14", "17": "--c++17"},
+            "c": {"99": "-c99", "11": "-c11"},
+        }
+        return flags[language][standard]
+
+    @classmethod
+    def determine_variants(cls, exes, version_str):
+        # TODO: use other exes to determine default_cuda/install_type/blas/lapack/mpi variants
+        return "~blas~lapack~mpi", {"compilers": cls.determine_compiler_paths(exes=exes)}
 
     def _version_prefix(self):
         return join_path(self.prefix, "Linux_%s" % self.spec.target.family, self.version)
 
-    def setup_build_environment(self, env):
+    def setup_build_environment(self, env: EnvironmentModifications) -> None:
         env.set("NVHPC_SILENT", "true")
         env.set("NVHPC_ACCEPT_EULA", "accept")
         env.set("NVHPC_INSTALL_DIR", self.prefix)
@@ -498,11 +554,11 @@ class Nvhpc(Package):
 
         makelocalrc_args = [
             "-gcc",
-            self.compiler.cc,
+            self["gcc"].cc,
             "-gpp",
-            self.compiler.cxx,
+            self["gcc"].cxx,
             "-g77",
-            self.compiler.f77,
+            self["gcc"].fortran,
             "-x",
             compilers_bin,
         ]
@@ -516,7 +572,7 @@ class Nvhpc(Package):
         # Update localrc to use Spack gcc
         makelocalrc(*makelocalrc_args)
 
-    def setup_run_environment(self, env):
+    def setup_run_environment(self, env: EnvironmentModifications) -> None:
         prefix = Prefix(
             join_path(self.prefix, "Linux_%s" % self.spec.target.family, self.version, "compilers")
         )
@@ -544,7 +600,9 @@ class Nvhpc(Package):
             env.prepend_path("PATH", mpi_prefix.bin)
             env.prepend_path("LD_LIBRARY_PATH", mpi_prefix.lib)
 
-    def setup_dependent_build_environment(self, env, dependent_spec):
+    def setup_dependent_build_environment(
+        self, env: EnvironmentModifications, dependent_spec: Spec
+    ) -> None:
         prefix = Prefix(
             join_path(self.prefix, "Linux_%s" % self.spec.target.family, self.version, "compilers")
         )
@@ -597,6 +655,24 @@ class Nvhpc(Package):
             libs.append("libnvf")
 
         return find_libraries(libs, root=prefix, recursive=True)
+
+    def _cc_path(self):
+        candidates = glob.glob(f"{self.prefix}/**/{self.spec.version}/compilers/bin/nvc")
+        if not candidates:
+            return None
+        return candidates[0]
+
+    def _cxx_path(self):
+        candidates = glob.glob(f"{self.prefix}/**/{self.spec.version}/compilers/bin/nvc++")
+        if not candidates:
+            return None
+        return candidates[0]
+
+    def _fortran_path(self):
+        candidates = glob.glob(f"{self.prefix}/**/{self.spec.version}/compilers/bin/nvfortran")
+        if not candidates:
+            return None
+        return candidates[0]
 
     # Avoid binding stub libraries by absolute path
     non_bindable_shared_objects = ["stubs"]
