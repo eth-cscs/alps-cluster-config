@@ -25,7 +25,7 @@ packages:
   slurm:
     buildable: false
     externals:
-    - spec: slurm@23-11-7
+    - spec: slurm@24-05-5
       prefix: /usr
   egl:
     buildable: false
