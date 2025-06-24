@@ -7,7 +7,7 @@ packages:
   cray-mpich:
     buildable: true
   libfabric:
-    buildable: false
+    buildable: true
     externals:
     - spec: libfabric@1.15.2.0
       prefix: /opt/cray/libfabric/1.15.2.0/
