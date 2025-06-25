@@ -6,6 +6,8 @@
 import os
 import platform
 
+from spack_repo.builtin.build_systems.generic import Package
+
 import spack.compilers
 from spack.package import *
 
