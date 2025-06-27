@@ -45,14 +45,14 @@ packages:
     externals:
     - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp
       prefix: /opt/cray/libfabric/1.22.0/
-    version: ["git.e08d3161b8038ebfa50a4eb5bf76132e4eaeb137=main"]
+    version: ["git.aac0bec1b004261057c816ab581ab9af4d2664b3=main"]
     require: fabrics=cxi,rxm,tcp
 
   libcxi:
-    version: ["git.0f3609b5e224636abffc7ceffe6f4e9c83244c08=main"]
+    version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
 
   cxi-driver:
-    version: ["git.c284516fa8d0027b8f84e8ca818e8c6bbe320bd8=main"]
+    version: ["git.13d9ae13b2d47d080851557e07a4c825ca976cf0=main"]
 
   cassini-headers:
-    version: ["git.9a8a738a879f007849fbc69be8e3487a4abf0952=main"]
+    version: ["git.59b6de6a91d9637809677c50cc48b607a91a9acb=main"]
