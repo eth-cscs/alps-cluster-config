@@ -1,7 +1,4 @@
 packages:
-  aws-ofi-nccl:
-    version:
-    - 'git.v1.9.2-aws=1.9.2'
   # patchelf v0.18 leads to errors when it was used to set RPATHS
   #   ELF load command address/offset not properly aligned
   # c.f.  https://github.com/NixOS/patchelf/issues/492
@@ -20,11 +17,6 @@ packages:
     externals:
     - spec: xpmem@2.9.6
       prefix: /usr
-  libfabric:
-    buildable: false
-    externals:
-    - spec: libfabric@1.15.2.0
-      prefix: /opt/cray/libfabric/1.15.2.0/
   slurm:
     buildable: false
     externals:
@@ -35,3 +27,32 @@ packages:
     externals:
     - spec: egl@1.5
       prefix: /usr
+  gcc:
+    externals:
+      - spec: gcc@12.3.0 languages='c,c++,fortran'
+        prefix: /usr
+        extra_attributes:
+          compilers:
+            c: /usr/bin/gcc-12
+            cxx: /usr/bin/g++-12
+            fortran: /usr/bin/gfortran-12
+  openmpi:
+    buildable: true
+    variants: +internal-pmix fabrics=cma,ofi,xpmem schedulers=slurm +cray-xpmem
+
+  libfabric:
+    buildable: true
+    externals:
+    - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp
+      prefix: /opt/cray/libfabric/1.22.0/
+    version: ["git.aac0bec1b004261057c816ab581ab9af4d2664b3=main"]
+    require: fabrics=cxi,rxm,tcp
+
+  libcxi:
+    version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
+
+  cxi-driver:
+    version: ["git.13d9ae13b2d47d080851557e07a4c825ca976cf0=main"]
+
+  cassini-headers:
+    version: ["git.59b6de6a91d9637809677c50cc48b607a91a9acb=main"]
