@@ -12,16 +12,16 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
-  libfabric:
-    buildable: false
-    externals:
-    - spec: libfabric@1.15.2.0
-      prefix: /opt/cray/libfabric/1.15.2.0/
   slurm:
     buildable: false
     externals:
     - spec: slurm@24-05-4
       prefix: /usr
+  libfabric:
+    buildable: false
+    externals:
+    - spec: libfabric@1.22.0
+      prefix: /opt/cray/libfabric/1.22.0
   egl:
     buildable: false
     externals:
