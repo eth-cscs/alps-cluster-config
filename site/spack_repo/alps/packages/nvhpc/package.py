@@ -465,6 +465,8 @@ class Nvhpc(Package):
         if pkg:
             version(ver, sha256=pkg[0], url=pkg[1])
 
+    depends_on("gcc languages=c,c++,fortran", type="run")
+
     variant("blas", default=True, description="Enable BLAS")
     variant(
         "install_type",
@@ -484,7 +486,8 @@ class Nvhpc(Package):
     provides("lapack", when="+lapack")
     provides("mpi", when="+mpi")
 
-    requires("%gcc", msg="nvhpc must be installed with %gcc")
+    provides("c", "cxx")
+    provides("fortran")
 
     def _version_prefix(self):
         return join_path(self.prefix, "Linux_%s" % self.spec.target.family, self.version)
