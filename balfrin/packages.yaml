@@ -13,7 +13,7 @@ packages:
   patchelf:
     require: "@:0.17"
   libfabric:
-    buildable: false
+    buildable: true
     externals:
     - spec: libfabric@1.15.2.0
       prefix: /opt/cray/libfabric/1.15.2.0/
