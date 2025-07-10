@@ -79,9 +79,10 @@ class CrayMpich(Package):
 
     requires(
         "%gcc",
+        "%llvm",
         "%nvhpc",
         policy="one_of",
-        msg="GCC and NVHPC are the only supported compilers by the CSCS packaged version.",
+        msg="GCC, LLVM, and NVHPC are the only supported compilers by the CSCS packaged version.",
     )
 
     conflicts("+cuda", when="+rocm", msg="Pick either CUDA or ROCM")
@@ -163,9 +164,9 @@ class CrayMpich(Package):
             return False
 
     def install(self, spec, prefix):
-        if "%nvhpc" in self.spec:
+        if "%fortran=nvhpc" in self.spec:
             install_tree("mpich-nvhpc", prefix)
-        elif "%gcc" in self.spec:
+        elif "%fortran=gcc" in self.spec or "%fortran=llvm" in self.spec:
             install_tree("mpich-gcc", prefix)
 
     @run_after("install")
