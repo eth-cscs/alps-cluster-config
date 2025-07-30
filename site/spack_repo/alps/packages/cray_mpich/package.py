@@ -168,6 +168,8 @@ class CrayMpich(Package):
             install_tree("mpich-nvhpc", prefix)
         elif "%fortran=gcc" in self.spec or "%fortran=llvm" in self.spec:
             install_tree("mpich-gcc", prefix)
+        else:
+            raise InstallError("Unsupported toolchain for cray-mpich")
 
     @run_after("install")
     def fixup_binaries(self):
