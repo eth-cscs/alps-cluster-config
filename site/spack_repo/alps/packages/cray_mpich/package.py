@@ -77,13 +77,18 @@ class CrayMpich(Package):
     variant("cuda", default=False)
     variant("rocm", default=False)
 
-    requires(
-        "%gcc",
-        "%llvm",
-        "%nvhpc",
-        policy="one_of",
-        msg="GCC, LLVM, and NVHPC are the only supported compilers by the CSCS packaged version.",
-    )
+    # This conflicts with mixed toolchains, whereby the fortran and c/cxx compilers are
+    # different. Comment out instead of removing, so that it can be refined to support
+    # mixed toolchains if/when we need in the future (after support for mixed toolchains
+    # in stackinator has been finalised).
+
+    #requires(
+    #    "%gcc",
+    #    "%llvm",
+    #    "%nvhpc",
+    #    policy="one_of",
+    #    msg="GCC, LLVM, and NVHPC are the only supported compilers by the CSCS packaged version.",
+    #)
 
     conflicts("+cuda", when="+rocm", msg="Pick either CUDA or ROCM")
 
