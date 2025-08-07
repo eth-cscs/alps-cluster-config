@@ -1,7 +1,7 @@
 mpi_supported: [cray-mpich, openmpi]
 
 cray-mpich:
-    version: "8.1.30"
+    version: "8.1.32"
     depends: ["libfabric@1.22"]
 
 openmpi:
