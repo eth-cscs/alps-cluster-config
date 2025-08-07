@@ -7,11 +7,48 @@ import os
 import re
 import sys
 
-import spack.compilers
+from spack_repo.builtin.build_systems.autotools import AutotoolsPackage
+from spack_repo.builtin.build_systems.cuda import CudaPackage
+from spack_repo.builtin.build_systems.rocm import ROCmPackage
+
 from spack.package import *
 
 
-class Openmpi(AutotoolsPackage, CudaPackage):
+def slingshot_network():
+    return os.path.exists("/opt/cray/pe") and (
+        os.path.exists("/lib64/libcxi.so") or os.path.exists("/usr/lib64/libcxi.so")
+    )
+
+
+@memoized
+def is_CrayEX():
+    # Credit to upcxx and chapel packages for this hpe-cray-ex detection function
+    if host_platform().name == "linux":
+        target = os.environ.get("CRAYPE_NETWORK_TARGET")
+        if target in ["ofi", "ucx"]:  # normal case
+            return True
+        elif target is None:  # but some systems lack Cray PrgEnv
+            fi_info = which("fi_info")
+            if (
+                fi_info
+                and fi_info("-l", output=str, error=str, fail_on_error=False).find("cxi") >= 0
+            ):
+                return True
+    return False
+
+
+def check_FI_HMEM_ROCR():
+    if host_platform().name == "linux":
+        fi_info = which("fi_info")
+        if fi_info:
+            output = fi_info("--caps", "FI_HMEM_ROCR", output=str, error=str, fail_on_error=False)
+            # Check if there is any output indicating at least one provider
+            if output.strip():
+                return True
+    return False
+
+
+class Openmpi(AutotoolsPackage, CudaPackage, ROCmPackage):
     """An open source Message Passing Interface implementation.
 
     The Open MPI Project is an open source Message Passing Interface
@@ -42,10 +79,13 @@ class Openmpi(AutotoolsPackage, CudaPackage):
 
     # Current
     version(
-        "5.0.7", sha256="119f2009936a403334d0df3c0d74d5595a32d99497f9b1d41e90019fee2fc2dd"
-    )  # libmpi.so.40.40.7
+        "5.0.8", sha256="53131e1a57e7270f645707f8b0b65ba56048f5b5ac3f68faabed3eb0d710e449"
+    )  # libmpi.so.40.40.8
 
     # Still supported
+    version(
+        "5.0.7", sha256="119f2009936a403334d0df3c0d74d5595a32d99497f9b1d41e90019fee2fc2dd"
+    )  # libmpi.so.40.40.7
     version(
         "5.0.6", sha256="bd4183fcbc43477c254799b429df1a6e576c042e74a2d2f8b37d537b2ff98157"
     )  # libmpi.so.40.40.6
@@ -404,10 +444,6 @@ class Openmpi(AutotoolsPackage, CudaPackage):
         "1.0", sha256="cf75e56852caebe90231d295806ac3441f37dc6d9ad17b1381791ebb78e21564"
     )  # libmpi.so.0.0.0
 
-    depends_on("c", type="build")
-    depends_on("cxx", type="build")
-    depends_on("fortran", type="build")
-
     patch("ad_lustre_rwcontig_open_source.patch", when="@1.6.5")
     patch("llnl-platforms.patch", when="@1.6.5")
     patch("configure.patch", when="@1.10.1")
@@ -459,6 +495,12 @@ class Openmpi(AutotoolsPackage, CudaPackage):
     patch("pmix_getline_pmix_version.patch", when="@5.0.0:5.0.3")
     patch("pmix_getline_pmix_version-prte.patch", when="@5.0.3")
 
+    # OpenMPI 5.0.7 specific patch - see https://github.com/open-mpi/ompi/pull/13106
+    patch(
+        "https://github.com/open-mpi/ompi/commit/d10e9765bdd28e62621395aef6bbb7710bae2e82.patch?full_index=1",
+        sha256="38529b557df029d6a987fa7e337db40b0ac1c1bb921776b95aacaa40e945cd21",
+        when="@4.1.8,5.0.7",
+    )
     FABRICS = (
         "psm",
         "psm2",
@@ -476,9 +518,9 @@ class Openmpi(AutotoolsPackage, CudaPackage):
 
     variant(
         "fabrics",
-        values=disjoint_sets(
-            ("auto",), FABRICS  # shared memory transports
-        ).with_non_feature_values("auto", "none"),
+        values=disjoint_sets(("auto",), FABRICS).with_non_feature_values(
+            "auto", "none"
+        ),  # shared memory transports
         description="List of fabrics that are enabled; " "'auto' lets openmpi determine",
     )
 
@@ -519,6 +561,7 @@ class Openmpi(AutotoolsPackage, CudaPackage):
         when="@:4",
         description="Enable deprecated C++ exception support",
     )
+    variant("fortran", default=True, description="Enable Fortran support")
     variant("gpfs", default=False, description="Enable GPFS support")
     variant(
         "singularity",
@@ -592,7 +635,12 @@ with '-Wl,-commons,use_dylibs' and without
 '-Wl,-flat_namespace'.""",
     )
 
-    variant("cray-xpmem", default=False, description="use cray-xpmem instead of xpmem configure flag (if fabrics=xpmem enabled)")
+    variant(
+        "cray-xpmem",
+        default=False,
+        when="fabrics=xpmem",
+        description="use cray-xpmem instead of xpmem configure flag",
+    )
 
     variant("continuations", default=False, description="Enable continuations extension")
 
@@ -611,6 +659,10 @@ with '-Wl,-commons,use_dylibs' and without
     provides("mpi@:3.0", when="@1.7.5:1.10.7")
     provides("mpi@:3.1", when="@2.0.0:")
 
+    depends_on("c", type="build")
+    depends_on("cxx", type="build")
+    depends_on("fortran", type="build", when="+fortran")
+
     if sys.platform != "darwin":
         depends_on("numactl")
 
@@ -620,7 +672,8 @@ with '-Wl,-commons,use_dylibs' and without
 
     depends_on("perl", type="build")
     depends_on("pkgconfig", type="build")
-    depends_on("flex", type="build", when="@main")
+    # Based on https://docs.open-mpi.org/en/v5.0.x/developers/prerequisites.html#flex
+    depends_on("flex@2.5.4:", type="build", when="@main")
 
     depends_on("hwloc@2:", when="@4: ~internal-hwloc")
     # ompi@:3.0.0 doesn't support newer hwloc releases:
@@ -630,6 +683,10 @@ with '-Wl,-commons,use_dylibs' and without
     depends_on("hwloc@:1", when="@:3 ~internal-hwloc")
 
     depends_on("hwloc +cuda", when="+cuda ~internal-hwloc")
+    for tgt in ROCmPackage.amdgpu_targets:
+        depends_on(
+            f"hwloc +rocm amdgpu_target={tgt}", when=f"+rocm ~internal-hwloc amdgpu_target={tgt}"
+        )
     depends_on("java", when="+java")
     depends_on("sqlite", when="+sqlite3")
     depends_on("zlib-api", when="@3:")
@@ -653,12 +710,19 @@ with '-Wl,-commons,use_dylibs' and without
     depends_on("fca", when="fabrics=fca")
     depends_on("hcoll", when="fabrics=hcoll")
     depends_on("ucc", when="fabrics=ucc")
+    depends_on("ucc +rocm", when="fabrics=ucc +rocm")
     depends_on("xpmem", when="fabrics=xpmem")
     depends_on("knem", when="fabrics=knem")
 
     depends_on("lsf", when="schedulers=lsf")
     depends_on("pbs", when="schedulers=tm")
     depends_on("slurm", when="schedulers=slurm")
+
+    with when("+rocm"):
+        libfabric_requirement = ""
+        if is_CrayEX() or check_FI_HMEM_ROCR() or slingshot_network():
+            libfabric_requirement = "fabrics=cxi"
+        requires("fabrics=ucx ^ucx +rocm", f"^libfabric {libfabric_requirement}", policy="one_of")
 
     # PMIx is unavailable for @1, and required for @2:
     # OpenMPI @2: includes a vendored version:
@@ -671,12 +735,17 @@ with '-Wl,-commons,use_dylibs' and without
         # See https://www.mail-archive.com/announce@lists.open-mpi.org//msg00158.html
         depends_on("pmix@:4.2.2", when="@:4.1.5")
 
+        # When an external PMIx is used, also an external PRRTE should be used
+        # https://github.com/open-mpi/ompi/issues/13275#issuecomment-2907903468
+        depends_on("prrte")
+
     # Libevent is required when *vendored* PMIx is used
     depends_on("libevent@2:", when="~internal-libevent")
 
     depends_on("openssh", type="run", when="+rsh")
 
     depends_on("cuda", type=("build", "link", "run"), when="@5: +cuda")
+    depends_on("hip", type=("build", "link", "run"), when="@5: +rocm")
 
     conflicts("+cxx_exceptions", when="%nvhpc", msg="nvc does not ignore -fexceptions, but errors")
 
@@ -684,6 +753,8 @@ with '-Wl,-commons,use_dylibs' and without
     # parent package we must express as a conflict rather than a conditional
     # variant.
     conflicts("+cuda", when="@:1.6")
+    # Same goes with ROCm support added in 5.0
+    conflicts("+rocm", when="@:4")
     # PSM2 support was added in 1.10.0
     conflicts("fabrics=psm2", when="@:1.8")
     # MXM support was added in 1.5.4
@@ -717,6 +788,10 @@ with '-Wl,-commons,use_dylibs' and without
     # for versions older than 3.0.3,3.1.3,4.0.0
     # Presumably future versions after 11/2018 should support slurm+static
     conflicts("+static", when="schedulers=slurm @:3.0.2,3.1:3.1.2,4.0.0")
+
+    # Building against an external PMIx with an internal Libevent or HWLOC is unsupported
+    conflicts("~internal-pmix", "+internal-hwloc")
+    conflicts("~internal-pmix", "+internal-libevent")
 
     filter_compiler_wrappers("openmpi/*-wrapper-data*", relative_root="share")
 
@@ -789,6 +864,15 @@ with '-Wl,-commons,use_dylibs' and without
                 variants.append("+cuda")
             else:
                 variants.append("~cuda")
+
+            # rocm
+            match = re.search(
+                r'parameter "mpi_built_with_rocm_support" ' + r'\(current value: "(\S+)"', output
+            )
+            if match and is_enabled(match.group(1)):
+                variants.append("+rocm")
+            else:
+                variants.append("~rocm")
 
             # wrapper-rpath
             if version in ver("1.7.4:"):
@@ -890,7 +974,7 @@ with '-Wl,-commons,use_dylibs' and without
 
         return find_libraries(libraries, root=self.prefix, shared=True, recursive=True)
 
-    def setup_run_environment(self, env):
+    def setup_run_environment(self, env: EnvironmentModifications) -> None:
         # Because MPI is both a runtime and a compiler, we have to setup the
         # compiler components as part of the run environment.
         env.set("MPICC", join_path(self.prefix.bin, "mpicc"))
@@ -904,7 +988,9 @@ with '-Wl,-commons,use_dylibs' and without
         if self.spec.satisfies("@1.7:"):
             env.set("MPIFC", join_path(self.prefix.bin, "mpifort"))
 
-    def setup_dependent_build_environment(self, env, dependent_spec):
+    def setup_dependent_build_environment(
+        self, env: EnvironmentModifications, dependent_spec: Spec
+    ) -> None:
         # Use the spack compiler wrappers under MPI
         dependent_module = dependent_spec.package.module
         for var_name, attr_name in (
@@ -941,6 +1027,11 @@ with '-Wl,-commons,use_dylibs' and without
     def setup_dependent_package(self, module, dependent_spec):
         self.spec.mpicc = join_path(self.prefix.bin, "mpicc")
         self.spec.mpicxx = join_path(self.prefix.bin, self.cxxname)
+        # Some derived packages define the "fortran" variant, most don't. Checking on the
+        # presence of ~fortran makes us default to add fortran wrappers if the variant is
+        # not declared.
+        if self.spec.satisfies("~fortran"):
+            return
         self.spec.mpifc = join_path(self.prefix.bin, "mpif90")
         self.spec.mpif77 = join_path(self.prefix.bin, "mpif77")
 
@@ -1019,14 +1110,6 @@ with '-Wl,-commons,use_dylibs' and without
             return "--without-tm"
         return f"--with-tm={self.spec['pbs'].prefix}"
 
-    @run_before("autoreconf")
-    def die_without_fortran(self):
-        # Until we can pass variants such as +fortran through virtual
-        # dependencies depends_on('mpi'), require Fortran compiler to
-        # avoid delayed build errors in dependents.
-        if (self.compiler.f77 is None) and (self.compiler.fc is None):
-            raise InstallError("OpenMPI requires both C and Fortran compilers!")
-
     @when("@main")
     def autoreconf(self, spec, prefix):
         perl = which("perl")
@@ -1043,7 +1126,7 @@ with '-Wl,-commons,use_dylibs' and without
 
     def configure_args(self):
         spec = self.spec
-        config_args = ["--enable-shared", "--disable-silent-rules", "--disable-sphinx", "--enable-mpi-fortran=no"]
+        config_args = ["--enable-shared", "--disable-silent-rules", "--disable-sphinx"]
 
         # Work around incompatibility with new apple-clang linker
         # https://github.com/open-mpi/ompi/issues/12427
@@ -1101,15 +1184,25 @@ with '-Wl,-commons,use_dylibs' and without
             config_args.extend(["--enable-debug"])
 
         # Package dependencies
-        for dep in ["libevent", "lustre", "singularity", "valgrind"]:
+        for dep in ["lustre", "singularity", "valgrind"]:
             if "^" + dep in spec:
                 config_args.append("--with-{0}={1}".format(dep, spec[dep].prefix))
 
-        # PMIx support
+        # libevent support
+        if spec.satisfies("+internal-libevent"):
+            config_args.append("--with-libevent=internal")
+        elif "^libevent" in spec:
+            config_args.append("--with-libevent={0}".format(spec["libevent"].prefix))
+
+        # PMIx/PRRTE support
         if spec.satisfies("+internal-pmix"):
             config_args.append("--with-pmix=internal")
-        elif "^pmix" in spec:
-            config_args.append("--with-pmix={0}".format(spec["pmix"].prefix))
+            config_args.append("--with-prrte=internal")
+        else:
+            if "^pmix" in spec:
+                config_args.append("--with-pmix={0}".format(spec["pmix"].prefix))
+            if "^prrte" in spec:
+                config_args.append("--with-prrte={0}".format(spec["prrte"].prefix))
 
         if "^zlib-api" in spec:
             config_args.append("--with-zlib={0}".format(spec["zlib-api"].prefix))
@@ -1181,6 +1274,13 @@ with '-Wl,-commons,use_dylibs' and without
         elif spec.satisfies("@1.7:"):
             config_args.append("--without-cuda")
 
+        # ROCm support
+        # See https://docs.open-mpi.org/en/v5.0.x/tuning-apps/networking/rocm.html
+        if "+rocm" in spec:
+            config_args.append("--with-rocm={0}".format(spec["hip"].prefix))
+        elif spec.satisfies("@5:"):
+            config_args.append("--without-rocm")
+
         if spec.satisfies("%nvhpc@:20.11"):
             # Workaround compiler issues
             config_args.append("CFLAGS=-O1")
@@ -1203,6 +1303,8 @@ with '-Wl,-commons,use_dylibs' and without
 
         config_args.extend(self.enable_or_disable("mpi-cxx", variant="cxx"))
         config_args.extend(self.enable_or_disable("cxx-exceptions", variant="cxx_exceptions"))
+
+        config_args.extend(self.enable_or_disable("mpi-fortran", variant="fortran"))
 
         #
         # the Spack path padding feature causes issues with Open MPI's lex based parsing system
@@ -1372,7 +1474,7 @@ with '-Wl,-commons,use_dylibs' and without
 
 
 def get_spack_compiler_spec(compiler):
-    spack_compilers = spack.compilers.config.find_compilers([os.path.dirname(compiler)])
+    spack_compilers = find_compilers([os.path.dirname(compiler)])
     actual_compiler = None
     # check if the compiler actually matches the one we want
     for spack_compiler in spack_compilers:
