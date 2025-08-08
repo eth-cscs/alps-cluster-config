@@ -17,11 +17,6 @@ packages:
     externals:
     - spec: xpmem@2.9.6
       prefix: /usr
-  libfabric:
-    buildable: true
-    externals:
-    - spec: libfabric@1.22.0
-      prefix: /opt/cray/libfabric/1.22.0/
   slurm:
     buildable: false
     externals:
@@ -41,3 +36,23 @@ packages:
             c: /usr/bin/gcc-12
             cxx: /usr/bin/g++-12
             fortran: /usr/bin/gfortran-12
+  openmpi:
+    buildable: true
+    variants: +internal-pmix fabrics=cma,ofi,xpmem schedulers=slurm +cray-xpmem
+
+  libfabric:
+    buildable: true
+    externals:
+    - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp
+      prefix: /opt/cray/libfabric/1.22.0/
+    version: ["git.v2.2.0=main"]
+    require: fabrics=cxi,rxm,tcp
+
+  libcxi:
+    version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
+
+  cxi-driver:
+    version: ["git.08deb056fac4ca8b0d3d39b5f7cc0dad019ee266=main"]
+
+  cassini-headers:
+    version: ["git.59b6de6a91d9637809677c50cc48b607a91a9acb=main"]
