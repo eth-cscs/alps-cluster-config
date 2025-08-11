@@ -117,9 +117,9 @@ class CrayMpich(Package):
         "9.0.0",
     ]:
         with when("+cuda"):
-            depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
+            depends_on(f"cray-gtl@{ver} +cuda", when="@" + ver)
         with when("+rocm"):
-            depends_on(f"cray-gtl@{ver} +rocm", type="link", when="@" + ver)
+            depends_on(f"cray-gtl@{ver} +rocm", when="@" + ver)
 
     depends_on("libfabric@1:", type="link")
 
