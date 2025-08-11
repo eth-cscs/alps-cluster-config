@@ -83,14 +83,14 @@ class CrayGtl(Package):
     conflicts("+cuda", when="+rocm", msg="Pick either CUDA or ROCM")
 
     with when("+cuda"):
-        depends_on("cuda@11.0:11", type="link", when="@:8.1.26")
-        depends_on("cuda@12.0:12", type="link", when="@8.1.27:")
+        depends_on("cuda@11.0:11", when="@:8.1.26")
+        depends_on("cuda@12.0:12", when="@8.1.27:")
 
     with when("+rocm"):
         # libamdhip64.so.5
-        depends_on("hip@5:", type="link")
+        depends_on("hip@5:")
         # libhsa-runtime64.so.1
-        depends_on("hsa-rocr-dev", type="link")
+        depends_on("hsa-rocr-dev")
 
     def get_rpaths(self):
         # Those rpaths are already set in the build environment, so
