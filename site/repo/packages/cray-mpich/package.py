@@ -69,7 +69,7 @@ class CrayMpich(Package):
                 ver,
                 sha256=sha,
                 preferred=(ver == "8.1.32"),
-                url=f"https://jfrog.svc.cscs.ch/artifactory/cray-mpich/cray-mpich-{ver}.{platform.machine()}.tar.gz",
+                url=f"file:///data/user/ext-pintar_s/cray-mpich/cray-mpich-{ver}.{platform.machine()}.tar.gz",
             )
 
     variant("cuda", default=False)
