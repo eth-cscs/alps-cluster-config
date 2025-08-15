@@ -1,18 +1,27 @@
 mpi:
   cray-mpich:
-    spec: cray-mpich{version} {gpu}
-    gpu: cuda
-    version: null
     specs: ["libfabric@1.22"]
   openmpi:
-    spec: openmpi{version} {gpu} +internal-pmix fabrics=cma,ofi,xpmem schedulers=slurm +cray-xpmem
-    gpu: cuda
-    version: null
-    specs: ["libfabric@1.22"]
+    specs: ["libfabric@2.2.0"]
 packages:
+  # adding a variant to the variants field of a package
+  #   e.g. packages:openmpi:variants
+  # is not strong enough: if that variant does not exist it simply will be ignored with no error message
   openmpi:
     buildable: true
-    variants: +internal-pmix fabrics=cma,ofi,xpmem schedulers=slurm +cray-xpmem
+    require:
+      - 'schedulers=slurm'
+      - 'fabrics=cma,ofi,xpmem'
+      - '+internal-pmix'
+      - '+cray-xpmem'
+    prefer:
+      - '+cuda'
+    variants: []
+  cray-mpich:
+    buildable: true
+    prefer:
+      - '+cuda'
+      - '@8.1.32'
   libfabric:
     buildable: true
     externals:
