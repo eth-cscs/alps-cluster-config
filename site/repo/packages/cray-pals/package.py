@@ -52,7 +52,7 @@ class CrayPals(Package):
             version(
                 ver,
                 sha256=sha,
-                url=f"file:///data/user/ext-pintar_s/cray-mpich/cray-pals-{ver}.{platform.machine()}.tar.gz",
+                url=f"file:///scratch/cray-mpich/cray-pals-{ver}.{platform.machine()}.tar.gz",
             )
 
     # Fix up binaries with patchelf.

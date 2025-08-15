@@ -61,7 +61,7 @@ class CrayPmi(Package):
             version(
                 ver,
                 sha256=sha,
-                url=f"file:///data/user/ext-pintar_s/cray-mpich/cray-pmi-{ver}.{platform.machine()}.tar.gz",
+                url=f"file:///scratch/cray-mpich/cray-pmi-{ver}.{platform.machine()}.tar.gz",
             )
 
     # Fix up binaries with patchelf.
