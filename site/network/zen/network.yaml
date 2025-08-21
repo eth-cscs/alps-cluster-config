@@ -1,0 +1,37 @@
+mpi:
+  cray-mpich:
+    specs: ["libfabric@1.22"]
+  openmpi:
+    specs: ["libfabric@2.2.0"]
+packages:
+  # adding a variant to the variants field of a package
+  #   e.g. packages:openmpi:variants
+  # is not strong enough: if that variant does not exist it simply will be ignored with no error message
+  openmpi:
+    buildable: true
+    require:
+      - 'schedulers=slurm'
+      - 'fabrics=cma,ofi,xpmem'
+      - '+internal-pmix'
+      - '+cray-xpmem'
+    prefer: []
+      #- '+cuda'
+    variants: []
+  cray-mpich:
+    buildable: true
+    prefer:
+      - '@8.1.32'
+  libfabric:
+    buildable: true
+    externals:
+    - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp
+      prefix: /opt/cray/libfabric/1.22.0/
+    version: ["git.v2.2.0=main"]
+    require: fabrics=cxi,rxm,tcp
+  libcxi:
+    version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
+  cxi-driver:
+    version: ["git.08deb056fac4ca8b0d3d39b5f7cc0dad019ee266=main"]
+  cassini-headers:
+    version: ["git.59b6de6a91d9637809677c50cc48b607a91a9acb=main"]
+
