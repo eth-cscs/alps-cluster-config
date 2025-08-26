@@ -26,7 +26,7 @@ packages:
     externals:
     - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp
       prefix: /opt/cray/libfabric/1.22.0/
-    version: ["git.v2.2.0=main"]
+    version: ["2.2.0"]
     require: fabrics=cxi,rxm,tcp
   libcxi:
     version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
