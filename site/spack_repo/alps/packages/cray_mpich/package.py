@@ -7,6 +7,7 @@ import os
 import platform
 
 from spack_repo.builtin.build_systems.generic import Package
+from spack_repo.builtin.packages.mpich.package import MpichEnvironmentModifications
 
 import spack.compilers
 from spack.package import *
@@ -55,7 +56,7 @@ _versions = {
 }
 
 
-class CrayMpich(Package):
+class CrayMpich(MpichEnvironmentModifications, Package):
     """Install cray-mpich as a binary package"""
 
     """Intended to override the main cray-mpich"""
@@ -128,27 +129,6 @@ class CrayMpich(Package):
 
     conflicts("%gcc@:7")
     conflicts("%gcc@:11", when="@8.1.28:")
-
-    def setup_run_environment(self, env):
-        env.set("MPICC", join_path(self.prefix.bin, "mpicc"))
-        env.set("MPICXX", join_path(self.prefix.bin, "mpic++"))
-        env.set("MPIF77", join_path(self.prefix.bin, "mpif77"))
-        env.set("MPIF90", join_path(self.prefix.bin, "mpif90"))
-
-    def setup_dependent_build_environment(self, env, dependent_spec):
-        self.setup_run_environment(env)
-        if "c" in dependent_spec:
-            env.set("MPICH_CC", dependent_spec["c"].package.cc)
-        if"cxx" in dependent_spec:
-            env.set("MPICH_CXX", dependent_spec["cxx"].package.cxx)
-        if "fortran" in dependent_spec:
-            env.set("MPICH_FC", dependent_spec["fortran"].package.fortran)
-
-    def setup_dependent_package(self, module, dependent_spec):
-        self.spec.mpicc = join_path(self.prefix.bin, "mpicc")
-        self.spec.mpicxx = join_path(self.prefix.bin, "mpic++")
-        self.spec.mpifc = join_path(self.prefix.bin, "mpif90")
-        self.spec.mpif77 = join_path(self.prefix.bin, "mpif77")
 
     def get_rpaths(self):
         # Those rpaths are already set in the build environment, so
