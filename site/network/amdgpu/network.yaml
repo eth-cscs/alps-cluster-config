@@ -2,7 +2,7 @@ mpi:
   cray-mpich:
     specs: ["libfabric@1.22"]
   openmpi:
-    specs: ["libfabric@2.2.0"]
+    specs: ["libfabric@2.2.0 fabrics=lnx"]
 packages:
   # adding a variant to the variants field of a package
   #   e.g. packages:openmpi:variants
