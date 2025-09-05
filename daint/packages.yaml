@@ -12,11 +12,11 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
-  xpmem:
-    buildable: true
-    externals:
-    - spec: xpmem@2.9.6
-      prefix: /usr
+  # xpmem:
+  #   buildable: true
+  #   externals:
+  #   - spec: xpmem@2.9.6
+  #     prefix: /usr
   libfabric:
     buildable: true
     externals:
