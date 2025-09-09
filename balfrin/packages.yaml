@@ -17,6 +17,11 @@ packages:
     externals:
     - spec: libfabric@1.15.2.0
       prefix: /opt/cray/libfabric/1.15.2.0/
+  lustre:
+    buildable: false
+    externals:
+    - spec: lustre@2.15
+      prefix: /usr 
   slurm:
     buildable: false
     externals:
