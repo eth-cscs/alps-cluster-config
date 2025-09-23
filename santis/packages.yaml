@@ -12,11 +12,6 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
-  libfabric:
-    buildable: true
-    externals:
-    - spec: libfabric@1.22.0
-      prefix: /opt/cray/libfabric/1.22.0/
   slurm:
     buildable: false
     externals:
