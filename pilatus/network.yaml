@@ -24,7 +24,7 @@ packages:
   libfabric:
     buildable: true
     externals:
-    - spec: libfabric@1.15.2.0
+    - spec: libfabric@1.15.2.0 fabrics=cxi,rxm,tcp,rxd,udp
       prefix: /opt/cray/libfabric/1.15.2.0/
     version: ["2.2.0"]
     require: fabrics=cxi,rxm,tcp
