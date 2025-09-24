@@ -1,6 +1,6 @@
 mpi:
   cray-mpich:
-    specs: ["libfabric@1.22"]
+    specs: ["libfabric@1.15.2.0"]
   openmpi:
     specs: ["libfabric@2.2.0 fabrics=lnx"]
 packages:
@@ -27,7 +27,7 @@ packages:
     externals:
     - spec: libfabric@1.15.2.0 fabrics=cxi,rxm,tcp,rxd,udp +cuda cuda_arch=80
       prefix: /opt/cray/libfabric/1.15.2.0/
-    version: ["2.2.0"]
+    version: ["1.15.2.0"]
     require: fabrics=cxi,rxm,tcp,rxd,udp
   libcxi:
     version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
