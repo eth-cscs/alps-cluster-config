@@ -6,11 +6,6 @@ packages:
     require: "@:0.17"
   cray-mpich:
     buildable: true
-  libfabric:
-    buildable: true
-    externals:
-    - spec: libfabric@1.15.2.0
-      prefix: /opt/cray/libfabric/1.15.2.0/
   slurm:
     buildable: false
     externals:
