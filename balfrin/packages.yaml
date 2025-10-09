@@ -12,6 +12,11 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
+  rdma-core:
+    buildable: false
+    externals:
+    - spec: rdma-core@31.0
+      prefix: /usr
   slurm:
     buildable: false
     externals:

@@ -10,23 +10,6 @@ packages:
     buildable: true
   cray-pmi:
     buildable: true
-  patchelf:
-    require: "@:0.17"
-  xpmem:
-    buildable: false
-    externals:
-    - spec: xpmem@2.9.6
-      prefix: /usr
-  slurm:
-    buildable: false
-    externals:
-    - spec: slurm@23-11-7
-      prefix: /usr
-  egl:
-    buildable: false
-    externals:
-    - spec: egl@1.5
-      prefix: /usr
   gcc:
     externals:
       - spec: gcc@12.3.0 languages='c,c++,fortran'
@@ -36,3 +19,25 @@ packages:
             c: /usr/bin/gcc-12
             cxx: /usr/bin/g++-12
             fortran: /usr/bin/gfortran-12
+  patchelf:
+    require: "@:0.17"
+  rdma-core:
+    buildable: false
+    externals:
+    - spec: rdma-core@31.0
+      prefix: /usr
+  slurm:
+    buildable: false
+    externals:
+    - spec: slurm@24-05-4
+      prefix: /usr
+  xpmem:
+    buildable: false
+    externals:
+    - spec: xpmem@2.9.6
+      prefix: /usr
+  egl:
+    buildable: false
+    externals:
+    - spec: egl@1.5
+      prefix: /usr
