@@ -34,5 +34,5 @@ packages:
   xpmem:
     buildable: false
     externals:
-    - spec: xpmem@2.9.6
+    - spec: xpmem@2.9.6 ~kernel-module
       prefix: /usr
