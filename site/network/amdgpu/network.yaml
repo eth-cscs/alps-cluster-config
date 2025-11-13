@@ -1,6 +1,6 @@
 mpi:
   cray-mpich:
-    specs: ["libfabric@1.22"]
+    specs: ["libfabric@2.2:"]
   openmpi:
     specs: ["libfabric@2.2.0 fabrics=lnx"]
 packages:
@@ -27,7 +27,9 @@ packages:
     externals:
     - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp,rxd,udp +rocm amdgpu_target=gfx90a,gfx942
       prefix: /opt/cray/libfabric/1.22.0/
-    version: ["2.2.0"]
+    prefer:
+      - '@2.2:'
+      - '+rocm'
     require: fabrics=cxi,rxm,tcp
   libcxi:
     version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
