@@ -16,9 +16,8 @@ packages:
     buildable: true
     require:
       - 'schedulers=slurm'
-      - 'fabrics=cma,ofi,xpmem'
+      - 'fabrics=cma,ofi'
       - '+internal-pmix'
-      - '+cray-xpmem'
     prefer:
       - '+cuda'
     variants: []
