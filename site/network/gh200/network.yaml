@@ -45,4 +45,7 @@ packages:
     version: ["git.08deb056fac4ca8b0d3d39b5f7cc0dad019ee266=main"]
   cassini-headers:
     version: ["git.59b6de6a91d9637809677c50cc48b607a91a9acb=main"]
+  xpmem:
+    prefer:
+      - '~kernel-module'
 
