@@ -19,6 +19,7 @@ packages:
       - 'fabrics=cma,ofi'
       - '+internal-pmix'
     prefer:
+      - '@5:'
       - '+cuda'
     variants: []
   cray-mpich:
