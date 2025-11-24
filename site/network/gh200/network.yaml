@@ -11,7 +11,7 @@ packages:
     buildable: true
     require:
       - 'schedulers=slurm'
-      - 'fabrics=cma,ofi'
+      - 'fabrics=cma,ofi,xpmem'
       - '+internal-pmix'
       - '+cray-xpmem'
     prefer:
