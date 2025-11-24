@@ -2,12 +2,7 @@ mpi:
   cray-mpich:
     specs: ["libfabric@2.2:"]
   openmpi:
-    specs:
-      - "libfabric@2.2: fabrics=lnx,shm,xpmem"
-      # OpenMPI needs xpmem headers to enable xpmem support. Headers are
-      # currently not available on the system for cray-xpmem, so prefer an
-      # upstream version which comes with headers.
-      - "xpmem@git.3bcab55479489fdd93847fa04c58ab16e9c0b3fd=master"
+    specs: ["libfabric@2.2: fabrics=lnx,shm,xpmem"]
 packages:
   # adding a variant to the variants field of a package
   #   e.g. packages:openmpi:variants
@@ -20,6 +15,7 @@ packages:
       - '+internal-pmix'
       - '+cray-xpmem'
     prefer:
+      - '@5.0.9:'
       - '+rocm'
     variants: []
   cray-mpich:

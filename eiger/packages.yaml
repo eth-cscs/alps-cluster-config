@@ -32,7 +32,7 @@ packages:
     - spec: slurm@24-05-4
       prefix: /usr
   xpmem:
-    buildable: true
+    buildable: false
     externals:
-    - spec: xpmem@2.9.6 ~kernel-module
+    - spec: xpmem@2.9.6
       prefix: /usr
