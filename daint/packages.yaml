@@ -29,12 +29,12 @@ packages:
   slurm:
     buildable: false
     externals:
-    - spec: slurm@24-05-4
+    - spec: slurm@25-05-4
       prefix: /usr
   xpmem:
     buildable: false
     externals:
-    - spec: xpmem@2.9.6
+    - spec: xpmem@2.9.6 ~kernel-module
       prefix: /usr
   egl:
     buildable: false
