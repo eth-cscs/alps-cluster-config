@@ -1,8 +1,8 @@
 mpi:
   cray-mpich:
-    specs: ["libfabric@1.22"]
+    specs: ["libfabric@2.2:"]
   openmpi:
-    specs: ["libfabric@2.2.0 fabrics=lnx"]
+    specs: ["libfabric@2.2: fabrics=lnx,shm,xpmem"]
 packages:
   # adding a variant to the variants field of a package
   #   e.g. packages:openmpi:variants
@@ -14,8 +14,8 @@ packages:
       - 'fabrics=cma,ofi,xpmem'
       - '+internal-pmix'
       - '+cray-xpmem'
-    prefer: []
-      #- '+cuda'
+    prefer:
+      - '@5:'
     variants: []
   cray-mpich:
     buildable: true
@@ -28,7 +28,8 @@ packages:
       prefix: /opt/cray/libfabric/1.22.0/
     - spec: libfabric@1.15.2.0 fabrics=cxi,rxm,tcp,rxd,udp
       prefix: /opt/cray/libfabric/1.15.2.0/
-    version: ["2.2.0"]
+    prefer:
+      - '@2.2:'
     require: fabrics=cxi,rxm,tcp
   libcxi:
     version: ["git.be1f7149482581ad589a124e5f6764b9d20d2d45=main"]
