@@ -1,0 +1,43 @@
+packages:
+  # patchelf v0.18 leads to errors when it was used to set RPATHS
+  #   ELF load command address/offset not properly aligned
+  # c.f.  https://github.com/NixOS/patchelf/issues/492
+  cray-gtl:
+    buildable: true
+  cray-mpich:
+    buildable: true
+  cray-pals:
+    buildable: true
+  cray-pmi:
+    buildable: true
+  gcc:
+    externals:
+      - spec: gcc@12.3.0 languages='c,c++,fortran'
+        prefix: /usr
+        extra_attributes:
+          compilers:
+            c: /usr/bin/gcc-12
+            cxx: /usr/bin/g++-12
+            fortran: /usr/bin/gfortran-12
+  patchelf:
+    require: "@:0.17"
+  rdma-core:
+    buildable: false
+    externals:
+    - spec: rdma-core@31.0
+      prefix: /usr
+  slurm:
+    buildable: false
+    externals:
+    - spec: slurm@25-05-4
+      prefix: /usr
+  xpmem:
+    buildable: false
+    externals:
+    - spec: xpmem@2.11.3 ~kernel-module
+      prefix: /usr
+  egl:
+    buildable: false
+    externals:
+    - spec: egl@1.5
+      prefix: /usr
