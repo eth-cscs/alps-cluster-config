@@ -1,1 +1,43 @@
-../site/network/gh200/network.yaml
+mpi:
+  cray-mpich:
+    specs: ["libfabric@2.2:"]
+  openmpi:
+    specs: ["libfabric@2.2: fabrics=lnx,shm,xpmem"]
+packages:
+  # adding a variant to the variants field of a package
+  #   e.g. packages:openmpi:variants
+  # is not strong enough: if that variant does not exist it simply will be ignored with no error message
+  openmpi:
+    buildable: true
+    require:
+      - 'schedulers=slurm'
+      - 'fabrics=cma,ofi,xpmem'
+      - '+internal-pmix'
+      - '+cray-xpmem'
+    prefer:
+      - '@5.0.9:'
+      - '+cuda'
+    variants: []
+  cray-mpich:
+    buildable: true
+    prefer:
+      - '+cuda'
+      - '@8.1.32'
+  libfabric:
+    buildable: true
+    externals:
+      # the 1.22.0 directory contains version 1.25.0
+      - spec: libfabric@1.25.0 fabrics=cxi,rxm,tcp,rxd,udp,shm +cuda cuda_arch=90,90a
+        prefix: /opt/cray/libfabric/1.22.0
+    prefer:
+      - '@2.2:'
+      - '+cuda'
+      - '+gdrcopy'
+    require: fabrics=cxi,rxm,tcp
+  libcxi:
+    version: ["git.release/shs-13.0.0=13.0.0"]
+  cxi-driver:
+    version: ["git.release/shs-13.0.0=13.0.0"]
+  cassini-headers:
+    version: ["git.release/shs-13.0.0=13.0.0"]
+
