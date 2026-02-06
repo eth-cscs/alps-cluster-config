@@ -104,9 +104,9 @@ class CrayMpich(MpichEnvironmentModifications, Package):
     provides("mpi")
 
     # Need access to compilers to fix compiler paths.
-    depends_on("c")
-    depends_on("cxx")
-    depends_on("fortran")
+    depends_on("c", type="build")
+    depends_on("cxx", type="build")
+    depends_on("fortran", type="build")
 
     # Fix up binaries with patchelf.
     depends_on("patchelf", type="build")
