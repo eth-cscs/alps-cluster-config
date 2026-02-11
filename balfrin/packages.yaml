@@ -25,8 +25,8 @@ packages:
   xpmem:
     buildable: false
     externals:
-    - spec: xpmem@2.6.2
-      prefix: /opt/cray/xpmem/default
+    - spec: xpmem@2.9.6 ~kernel-module
+      prefix: /usr
   gcc:
     externals:
       - spec: gcc@12.3.0 languages='c,c++,fortran'
