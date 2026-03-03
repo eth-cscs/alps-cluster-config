@@ -3,6 +3,8 @@ mpi:
     specs: ["libfabric@2.2:"]
   openmpi:
     specs: ["libfabric@2.2: fabrics=lnx,shm,xpmem"]
+  mpich:
+    specs: ["libfabric@2.2: fabrics=lnx,shm,xpmem"]
 packages:
   # adding a variant to the variants field of a package
   #   e.g. packages:openmpi:variants
