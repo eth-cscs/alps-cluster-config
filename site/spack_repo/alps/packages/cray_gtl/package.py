@@ -141,7 +141,7 @@ class CrayGtl(Package):
                 if "@8.1.27+cuda" in self.spec:
                     patchelf("--add-needed", "libcudart.so", f, fail_on_error=False)
                     patchelf("--add-needed", "libcuda.so", f, fail_on_error=False)
-                if "^rocm@7:" in self.spec:
+                if "%hip@7:" in self.spec:
                     patchelf("--replace-needed", "libamdhip64.so.6", "libamdhip64.so.7", f, fail_on_error=False)
 
     @run_after("install")
