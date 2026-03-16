@@ -96,7 +96,7 @@ class CrayGtl(Package):
 
     with when("+cuda"):
         depends_on("cuda@11.0:11", type="link", when="@:8.1.26")
-        depends_on("cuda@12.0:12", type="link", when="@8.1.27:")
+        depends_on("cuda@12.0:12", type="link", when="@8.1.27:9.0")
         depends_on("cuda@13:", type="link", when="@9.1:")
 
     with when("+rocm"):
