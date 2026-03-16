@@ -12,6 +12,10 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "9.1.0": {
+        "Linux-aarch64": "9634af2ed4a4bc3142f10ee94af50d81f58c5548d8c4f2584a8d5712877aac91",
+        "Linux-x86_64": "c3bceacc14476aaac9adbf91c67dead496d9fa9b2eced97193f1c7b0635e5d43",
+    },
     "9.0.1": {
         "Linux-aarch64": "e9a9c50ca601c4f92d6592d4cfe8135fbac1602e8814a2f79d44b2d846e166b8",
         "Linux-x86_64": "9acc12205bb535139823f1930198d8eca323d022cd7cdf1da2299a287aca9443",
@@ -93,6 +97,7 @@ class CrayGtl(Package):
     with when("+cuda"):
         depends_on("cuda@11.0:11", type="link", when="@:8.1.26")
         depends_on("cuda@12.0:12", type="link", when="@8.1.27:")
+        depends_on("cuda@13:", type="link", when="@9.1:")
 
     with when("+rocm"):
         # libamdhip64.so.5

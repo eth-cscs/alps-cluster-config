@@ -13,6 +13,10 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "9.1.0": {
+        "Linux-aarch64": "30419d03e0f03466a2cee15344596ef399aa704dea0b5b114445a10c6c1f3c74",
+        "Linux-x86_64": "b9878c042a09a56b76dd76cc3ee8147f4c12c9a56220e0b747a804f9cc18f862",
+    },
     "9.0.1": {
         "Linux-aarch64": "8143437fbd8b77c94398c7ef8db9f387c2c677cccf161e881e1ada24e95c3fee",
         "Linux-x86_64": "63567f1319e8ff49e95977da4a1768d65291ae58d66bee0bba20cfb90df1caa3",
@@ -126,6 +130,7 @@ class CrayMpich(MpichEnvironmentModifications, Package):
         "9.0.0",
         "8.1.33",
         "9.0.1",
+        "9.1.0"
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
