@@ -12,11 +12,6 @@ packages:
     buildable: true
   patchelf:
     require: "@:0.17"
-  libfabric:
-    buildable: false
-    externals:
-    - spec: libfabric@1.15.2.0
-      prefix: /opt/cray/libfabric/1.15.2.0/
   lustre:
     buildable: false
     externals:
