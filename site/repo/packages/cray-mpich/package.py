@@ -10,6 +10,18 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "9.1.0": {
+        "Linux-aarch64": "30419d03e0f03466a2cee15344596ef399aa704dea0b5b114445a10c6c1f3c74",
+        "Linux-x86_64": "b9878c042a09a56b76dd76cc3ee8147f4c12c9a56220e0b747a804f9cc18f862",
+    },
+    "9.0.1": {
+        "Linux-aarch64": "8143437fbd8b77c94398c7ef8db9f387c2c677cccf161e881e1ada24e95c3fee",
+        "Linux-x86_64": "63567f1319e8ff49e95977da4a1768d65291ae58d66bee0bba20cfb90df1caa3",
+    },
+    "8.1.33": {
+        "Linux-aarch64": "185915b7c383eeb4e14e4aea6f9430909cc807c3dd5cc79473f0c7241f150ec5",
+        "Linux-x86_64": "d8dd3565b177106de7a12b5377ecd9d3d04b546b5cdc77aa02e1ccb84ce7afad",
+    },
     "9.0.0": {
         "Linux-aarch64": "d3f91487b00d4d9b4edd129b9b12e702c6cec4ce7f0e886e2e6e489846bb0928",
         "Linux-x86_64": "962aaebea6b234a369e376ee986d0a3f5142fc4a66ac8bbee863053f89b42c55",
@@ -75,12 +87,12 @@ class CrayMpich(Package):
     variant("cuda", default=False)
     variant("rocm", default=False)
 
-    requires(
-        "%gcc",
-        "%nvhpc",
-        policy="one_of",
-        msg="GCC and NVHPC are the only supported compilers by the CSCS packaged version.",
-    )
+    # requires(
+    #     "%gcc",
+    #     "%nvhpc",
+    #     policy="one_of",
+    #     msg="GCC and NVHPC are the only supported compilers by the CSCS packaged version.",
+    # )
 
     conflicts("+cuda", when="+rocm", msg="Pick either CUDA or ROCM")
 
@@ -102,6 +114,9 @@ class CrayMpich(Package):
         "8.1.30",
         "8.1.32",
         "9.0.0",
+        "8.1.33",
+        "9.0.1",
+        "9.1.0",
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
@@ -111,6 +126,9 @@ class CrayMpich(Package):
     depends_on("libfabric@1:", type="link")
 
     depends_on("cray-pmi", type="link")
+    depends_on("cray-pmi@:6.1.15", when="@:8.1.32,=9.0.0")
+    # cray-pmi@6.1.16 is linked to glibc from sles15sp6
+    depends_on("cray-pmi@6.1.16:", when="@8.1.33,9.0.1:")
     depends_on("xpmem", type="link")
 
     conflicts("%gcc@:7")
