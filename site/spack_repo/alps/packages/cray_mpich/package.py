@@ -172,7 +172,7 @@ class CrayMpich(MpichEnvironmentModifications, Package):
             install_tree("mpich-nvhpc", prefix)
         elif "%fortran=gcc" in self.spec or "%fortran=llvm" in self.spec:
             install_tree("mpich-gcc", prefix)
-        elif "%fortran=intel-oneapi-compilers" in self.spec:
+        elif "%fortran=oneapi" in self.spec:
             install_tree("mpich-intel", prefix)
         else:
             raise InstallError("Unsupported toolchain for cray-mpich")
