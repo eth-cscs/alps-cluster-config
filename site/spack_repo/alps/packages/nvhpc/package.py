@@ -23,6 +23,16 @@ from spack.package import *
 #  - package key must be in the form '{os}-{arch}' where 'os' is in the
 #    format returned by platform.system() and 'arch' by platform.machine()
 _versions = {
+    "26.3": {
+        "Linux-aarch64": (
+            "b7cb60c89e149e2695bc69cdee79270922d681689cdf41c40217ddd15231cdc9",
+            "https://developer.download.nvidia.com/hpc-sdk/26.3/nvhpc_2026_263_Linux_aarch64_cuda_13.1.tar.gz",
+        ),
+        "Linux-x86_64": (
+            "94468e4ecbd481722afc8235233d3e93a1e994c0289fa7783329aafab53a5bb3",
+            "https://developer.download.nvidia.com/hpc-sdk/26.3/nvhpc_2026_263_Linux_x86_64_cuda_13.1.tar.gz",
+        ),
+    },
     "26.1": {
         "Linux-aarch64": (
             "d431313607806aba3555b65788592042926c68dde520c05820b54aa059d421e9",
