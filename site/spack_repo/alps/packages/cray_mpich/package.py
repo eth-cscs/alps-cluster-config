@@ -31,7 +31,7 @@ _versions = {
     },
     "8.1.32": {
         "Linux-aarch64": "64ac7a1cf1850a13aaf9b7a080cf955e71ee8388a35d08d283fb4850b6a9ebc3",
-        "Linux-x86_64": "ce8d8d544f99c97079c04981675a7ca0f53d9b69a482eb7bb1dc09af32cd2313",
+        "Linux-x86_64": "0c1bbdb15959fa4aaec8e0da900e13d674162f60695711ea47c19583c4ab15ba",
     },
     "8.1.30": {
         "Linux-aarch64": "18f0b403c7ce586926c3f6f7a64e412889f59f596145e17edbe8778a245372a6",
@@ -171,6 +171,8 @@ class CrayMpich(MpichEnvironmentModifications, Package):
             install_tree("mpich-nvhpc", prefix)
         elif "%fortran=gcc" in self.spec or "%fortran=llvm" in self.spec:
             install_tree("mpich-gcc", prefix)
+        elif "%fortran=oneapi" in self.spec:
+            install_tree("mpich-intel", prefix)
         else:
             raise InstallError("Unsupported toolchain for cray-mpich")
 
