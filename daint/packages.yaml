@@ -23,12 +23,12 @@ packages:
   libfabric:
     buildable: false
     externals:
-    - spec: libfabric@1.15.2.0
-      prefix: /opt/cray/libfabric/1.15.2.0/
+    - spec: libfabric@1.22.0
+      prefix: /opt/cray/libfabric/1.22.0/
   slurm:
     buildable: false
     externals:
-    - spec: slurm@23-11-7
+    - spec: slurm@25-05-4
       prefix: /usr
   egl:
     buildable: false
