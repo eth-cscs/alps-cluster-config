@@ -1,0 +1,454 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "packaging",
+#   "rich",
+#   "tabulate",
+# ]
+# ///
+
+# vim: set syntax=python:
+
+"""Report versions of software installed on the system."""
+
+import argparse
+import collections
+import json
+import os
+import re
+import subprocess
+
+from packaging.version import Version
+from rich import box
+from rich.console import Console
+from rich.style import Style
+from rich.table import Table
+from tabulate import tabulate
+
+# Standard subdirectories that sit directly under an install prefix.
+_PREFIX_SUBDIRS = {'bin', 'sbin', 'lib', 'lib64', 'include', 'share', 'libexec'}
+
+
+def _infer_prefix(package_name):
+    """Return the install prefix for an RPM by inspecting its file list.
+
+    Looks for files whose path contains a standard subdirectory (bin, lib,
+    include, ...) and counts how often each candidate prefix appears.  The
+    most common one is returned, or None if nothing can be inferred.
+    """
+    try:
+        result = subprocess.run(
+            ['rpm', '-ql', package_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except OSError:
+        return None
+
+    if result.returncode != 0:
+        return None
+
+    counts = collections.Counter()
+    for line in result.stdout.decode('utf-8').splitlines():
+        parts = line.split(os.sep)
+        # parts[0] is '' for absolute paths; search from index 1 onwards
+        for i, part in enumerate(parts[1:], start=1):
+            if part in _PREFIX_SUBDIRS:
+                prefix = os.sep + os.path.join(*parts[1:i]) if i > 1 else os.sep
+                counts[prefix] += 1
+                break
+
+    if not counts:
+        return None
+
+    return counts.most_common(1)[0][0]
+
+
+def _rpm_installed(package_name):
+    """Return True if the named RPM is installed."""
+    try:
+        result = subprocess.run(
+            ['rpm', '-q', package_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        return result.returncode == 0
+    except OSError:
+        return False
+
+
+def query_rpm(package_name):
+    """Query an RPM package and return version information.
+
+    Args:
+        package_name: The RPM package name (e.g. 'cray-cassini-headers-user')
+
+    Returns:
+        None if the package is not installed, otherwise a dict with keys:
+            'version': the package version as a Version (e.g. Version('1.1.1'))
+            'shs': the SHS release version as a Version (e.g. Version('12.0.1')), or None if not present
+            'prefix': the install prefix as a string (e.g. '/usr'), or None if it cannot be inferred
+    """
+    try:
+        result = subprocess.run(
+            ['rpm', '-q', '--queryformat', '%{VERSION} %{RELEASE}', package_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except OSError:
+        return None
+
+    if result.returncode != 0:
+        return None
+
+    output = result.stdout.decode('utf-8').strip()
+    parts = output.split(' ', 1)
+    if len(parts) != 2:
+        return None
+
+    version, release = parts
+
+    shs = None
+    match = re.search(r'SHS(\d+\.\d+\.\d+)', release)
+    if match:
+        shs = match.group(1)
+
+    semver = re.match(r'[\d.]+', version).group(0).rstrip('.')
+    return {
+        'version': Version(semver),
+        'shs': Version(shs) if shs else None,
+        'prefix': _infer_prefix(package_name),
+    }
+
+
+# Maps logical package name -> list of RPM package names to query (first match wins).
+PACKAGES = {
+    'cassini-headers': ['cray-cassini-headers-user'],
+    'libcxi':          ['cray-libcxi'],
+    'cxi-driver':      ['cray-cxi-driver-devel'],
+    'libfabric':       ['libfabric'],
+    'slurm':           ['slurm'],
+    'vast':            ['vastnfs'],
+    'lustre':          ['lustre-client'],
+    'xpmem':           ['cray-libxpmem-devel', 'xpmem'],
+}
+
+
+def collect_data():
+    """Query all packages and return a list of row dicts.
+
+    Each dict has keys: 'name', 'version', 'shs', 'prefix'.
+    Values are None when the package is not installed or the field is absent.
+    """
+    rows = []
+    for name, rpms in PACKAGES.items():
+        info = None
+        for rpm in rpms:
+            info = query_rpm(rpm)
+            if info is not None:
+                break
+        if info is None:
+            rows.append({'name': name, 'version': None, 'shs': None, 'prefix': None})
+        else:
+            rows.append({'name': name, 'version': info['version'], 'shs': info['shs'], 'prefix': info['prefix']})
+    return rows
+
+
+def _fmt_version(v):
+    return str(v) if v is not None else '[dim]-[/dim]'
+
+
+def print_pretty(rows):
+    table = Table(
+        box=box.ROUNDED,
+        header_style=Style(color='bright_white', bold=True),
+        border_style=Style(color='grey50'),
+        show_lines=False,
+    )
+    table.add_column('Package',  style='bold cyan',         no_wrap=True)
+    table.add_column('Version',  style='bright_green',      no_wrap=True)
+    table.add_column('SHS',      style='bright_yellow',     no_wrap=True)
+    table.add_column('Prefix',   style='bright_magenta',    no_wrap=True)
+
+    for row in rows:
+        not_installed = row['version'] is None
+        if not_installed:
+            table.add_row(
+                row['name'],
+                '[dim]not installed[/dim]',
+                '[dim]-[/dim]',
+                '[dim]-[/dim]',
+            )
+        else:
+            table.add_row(
+                row['name'],
+                _fmt_version(row['version']),
+                _fmt_version(row['shs']),
+                row['prefix'] or '[dim]-[/dim]',
+            )
+
+    Console().print(table)
+
+
+def print_markdown(rows):
+    table = [
+        [
+            row['name'],
+            str(row['shs'])    if row['shs']    is not None else '-',
+            row['prefix']      if row['prefix'] is not None else '-',
+        ]
+        for row in rows
+    ]
+    headers = ['Package', 'SHS', 'Prefix']
+    print(tabulate(table, headers=headers, tablefmt='github'))
+
+
+def _rows_to_json(rows):
+    return [
+        {
+            'name':    row['name'],
+            'version': str(row['version']) if row['version'] is not None else None,
+            'shs':     str(row['shs'])     if row['shs']     is not None else None,
+            'prefix':  row['prefix'],
+        }
+        for row in rows
+    ]
+
+
+def print_json(rows):
+    print(json.dumps(_rows_to_json(rows), indent=2))
+
+
+# ---------------------------------------------------------------------------
+# Properties
+# ---------------------------------------------------------------------------
+
+def _read_os_release():
+    """Parse /etc/os-release and return a dict of key->value strings."""
+    props = {}
+    try:
+        with open('/etc/os-release') as f:
+            for line in f:
+                line = line.strip()
+                if '=' not in line:
+                    continue
+                k, _, v = line.partition('=')
+                props[k] = v.strip('"')
+    except OSError:
+        pass
+    return props
+
+
+def collect_properties():
+    """Return a list of {key, value} dicts describing system properties."""
+    props = []
+
+    os_release = _read_os_release()
+    name = os_release.get('NAME', '')
+    version_id = os_release.get('VERSION_ID', '')
+    if name and version_id:
+        props.append({'key': 'os', 'value': '{} {}'.format(name, version_id)})
+
+    cluster = os.environ.get('CLUSTER_NAME')
+    if cluster:
+        props.append({'key': 'cluster', 'value': cluster})
+
+    try:
+        smi = subprocess.run(
+            ['nvidia-smi', '--version'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        if smi.returncode == 0:
+            output = smi.stdout.decode('utf-8')
+            m = re.search(r'DRIVER version\s*:\s*([\d.]+)', output, re.IGNORECASE)
+            if m:
+                props.append({'key': 'nvidia-driver', 'value': m.group(1)})
+            m = re.search(r'CUDA Version\s*:\s*([\d.]+)', output, re.IGNORECASE)
+            if m:
+                props.append({'key': 'cuda', 'value': m.group(1)})
+    except OSError:
+        pass
+
+    return props
+
+
+def print_properties_pretty(rows):
+    table = Table(
+        box=box.ROUNDED,
+        header_style=Style(color='bright_white', bold=True),
+        border_style=Style(color='grey50'),
+        show_lines=False,
+        show_header=False,
+    )
+    table.add_column('Key',   style='bold cyan',    no_wrap=True)
+    table.add_column('Value', style='bright_green', no_wrap=True)
+
+    for row in rows:
+        table.add_row(row['key'], row['value'])
+
+    Console().print(table)
+
+
+def print_properties_markdown(rows):
+    print(tabulate([[r['key'], r['value']] for r in rows],
+                   headers=['Key', 'Value'], tablefmt='github'))
+
+
+# ---------------------------------------------------------------------------
+# GCC detection
+# ---------------------------------------------------------------------------
+
+def collect_gcc_data():
+    """Discover all installed gccN base packages and return a list of dicts.
+
+    Each dict has keys:
+        'major':   int, the GCC major version (e.g. 13)
+        'version': Version or None
+        'prefix':  str or None
+        'c':       bool, base gcc compiler installed
+        'cxx':     bool, gcc{N}-c++ installed
+        'fortran': bool, gcc{N}-fortran installed
+    """
+    # Find all installed gccN base packages.
+    try:
+        result = subprocess.run(
+            ['rpm', '-qa', '--queryformat', '%{NAME}\n'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except OSError:
+        return []
+
+    majors = sorted({
+        int(re.match(r'^gcc(\d+)$', name).group(1))
+        for name in result.stdout.decode('utf-8').splitlines()
+        if re.match(r'^gcc(\d+)$', name)
+    })
+
+    rows = []
+    for major in majors:
+        base = 'gcc{}'.format(major)
+        info = query_rpm(base)
+        if info and info['version']:
+            # Strip build metadata suffixes like +r278197 or +git9426.
+            clean = re.sub(r'\+.*$', '', str(info['version']))
+            gcc_version = Version(clean)
+        else:
+            gcc_version = None
+        prefix = info['prefix'] if info else None
+
+        def _exe(name, rpm):
+            if not _rpm_installed(rpm):
+                return None
+            return '{}/bin/{}-{}'.format(prefix, name, major) if prefix else None
+
+        rows.append({
+            'major':   major,
+            'version': gcc_version,
+            'prefix':  prefix,
+            'c':       '{}/bin/gcc-{}'.format(prefix, major) if info and prefix else None,
+            'cxx':     _exe('g++',      'gcc{}-c++'.format(major)),
+            'fortran': _exe('gfortran', 'gcc{}-fortran'.format(major)),
+        })
+    return rows
+
+
+def _lang_cell(exe, fmt):
+    if fmt == 'pretty':
+        return '[bright_green]{}[/bright_green]'.format(exe) if exe else '[dim]✘[/dim]'
+    return exe if exe else '-'
+
+
+def print_gcc_pretty(rows):
+    table = Table(
+        box=box.ROUNDED,
+        header_style=Style(color='bright_white', bold=True),
+        border_style=Style(color='grey50'),
+        show_lines=False,
+    )
+    table.add_column('GCC',     style='bold cyan',      no_wrap=True)
+    table.add_column('Version', style='bright_green',   no_wrap=True)
+    table.add_column('C',       justify='center',       no_wrap=True)
+    table.add_column('C++',     justify='center',       no_wrap=True)
+    table.add_column('Fortran', justify='center',       no_wrap=True)
+    table.add_column('Prefix',  style='bright_magenta', no_wrap=True)
+
+    for row in rows:
+        table.add_row(
+            str(row['major']),
+            str(row['version']) if row['version'] else '[dim]-[/dim]',
+            _lang_cell(row['c'],       'pretty'),
+            _lang_cell(row['cxx'],     'pretty'),
+            _lang_cell(row['fortran'], 'pretty'),
+            row['prefix'] or '[dim]-[/dim]',
+        )
+
+    Console().print(table)
+
+
+def print_gcc_markdown(rows):
+    table = [
+        [
+            row['major'],
+            _lang_cell(row['c'],       'md'),
+            _lang_cell(row['cxx'],     'md'),
+            _lang_cell(row['fortran'], 'md'),
+            row['prefix'] or '-',
+        ]
+        for row in rows
+    ]
+    headers = ['GCC', 'C', 'C++', 'Fortran', 'Prefix']
+    print(tabulate(table, headers=headers, tablefmt='github'))
+
+
+def _gcc_rows_to_json(rows):
+    return [
+        {
+            'major':   row['major'],
+            'version': str(row['version']) if row['version'] else None,
+            'prefix':  row['prefix'],
+            'c':       row['c'],
+            'cxx':     row['cxx'],
+            'fortran': row['fortran'],
+        }
+        for row in rows
+    ]
+
+
+def print_gcc_json(rows):
+    print(json.dumps(_gcc_rows_to_json(rows), indent=2))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Report installed Cray package versions.')
+    parser.add_argument(
+        '--format',
+        choices=['pretty', 'markdown', 'json'],
+        default='pretty',
+        help='Output format (default: pretty)',
+    )
+    args = parser.parse_args()
+
+    prop_rows = collect_properties()
+    rows      = collect_data()
+    gcc_rows  = collect_gcc_data()
+
+    if args.format == 'pretty':
+        print_properties_pretty(prop_rows)
+        print_pretty(rows)
+        print_gcc_pretty(gcc_rows)
+    elif args.format == 'markdown':
+        print_properties_markdown(prop_rows)
+        print()
+        print_markdown(rows)
+        print()
+        print_gcc_markdown(gcc_rows)
+    elif args.format == 'json':
+        print(json.dumps({
+            'properties': prop_rows,
+            'packages':   _rows_to_json(rows),
+            'gcc':        _gcc_rows_to_json(gcc_rows),
+        }, indent=2))
+
