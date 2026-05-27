@@ -31,10 +31,21 @@ packages:
     prefer:
       - '@2.2:'
     require: fabrics=cxi,rxm,tcp
+  # todo: 12.0 is the closest to the shs 11.1.0 installed on the system
   libcxi:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: libcxi@12.0.0
+      prefix: /usr
   cxi-driver:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cxi-driver@12.0.0
+      prefix: /usr
   cassini-headers:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cassini-headers@12.0.0
+      prefix: /usr
+
 
