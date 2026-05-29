@@ -29,21 +29,20 @@ packages:
       prefix: /opt/cray/libfabric/1.22.0/
     version: ["2.2.0"]
     require: fabrics=cxi,rxm,tcp
-  # todo: 12.0 is the closest to the shs 11.1.0 installed on the system
   libcxi:
     buildable: false
     externals:
-    - spec: libcxi@12.0.2 +cuda
+    - spec: libcxi@11.1.0 +cuda
       prefix: /usr
   cxi-driver:
     buildable: false
     externals:
-    - spec: cxi-driver@12.0.2
+    - spec: cxi-driver@11.1.0
       prefix: /usr
   cassini-headers:
     buildable: false
     externals:
-    - spec: cassini-headers@12.0.2
+    - spec: cassini-headers@11.1.0
       prefix: /usr
 
 
