@@ -29,9 +29,21 @@ packages:
       prefix: /opt/cray/libfabric/1.15.2.0/
     version: ["1.15.2.0"]
     require: fabrics=cxi,rxm,tcp,rxd,udp
+  # the SHS version on balfrin is 11.1.0
+  # however, this is not supported by the open source releases so we say 12.0 for now
   libcxi:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: libcxi@12.0.2 +cuda
+      prefix: /usr
   cxi-driver:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cxi-driver@12.0.2
+      prefix: /usr
   cassini-headers:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cassini-headers@12.0.2
+      prefix: /usr
+

@@ -32,9 +32,19 @@ packages:
       - '@2.2:'
     require: fabrics=cxi,rxm,tcp
   libcxi:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: libcxi@11.1.0
+      prefix: /usr
   cxi-driver:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cxi-driver@11.1.0
+      prefix: /usr
   cassini-headers:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cassini-headers@11.1.0
+      prefix: /usr
+
 

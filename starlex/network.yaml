@@ -26,18 +26,26 @@ packages:
   libfabric:
     buildable: true
     externals:
-      # the 1.22.0 directory contains version 1.25.0
-      - spec: libfabric@1.25.0 fabrics=cxi,rxm,tcp,rxd,udp,shm +cuda cuda_arch=90,90a
-        prefix: /opt/cray/libfabric/1.22.0
+      - spec: libfabric@2.3.1 fabrics=cxi,rxm,tcp,rxd,udp,shm +cuda cuda_arch=90,90a
+        prefix: /opt/cray/libfabric/2.3.1
     prefer:
       - '@2.2:'
       - '+cuda'
       - '+gdrcopy'
     require: fabrics=cxi,rxm,tcp
   libcxi:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: libcxi@13.1.0 +cuda
+      prefix: /usr
   cxi-driver:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cxi-driver@13.1.0
+      prefix: /usr
   cassini-headers:
-    version: ["git.release/shs-13.0.0=13.0.0"]
+    buildable: false
+    externals:
+    - spec: cassini-headers@13.1.0
+      prefix: /usr
 
