@@ -29,7 +29,7 @@ _versions = {
             "https://developer.download.nvidia.com/hpc-sdk/26.5/nvhpc_2026_265_Linux_aarch64_cuda_13.2.tar.gz",
         ),
         "Linux-x86_64": (
-            "8849b3909f7e75df4c32af4dc585bf0701d85495da43221b090a9af77df203b6"
+            "8849b3909f7e75df4c32af4dc585bf0701d85495da43221b090a9af77df203b6",
             "https://developer.download.nvidia.com/hpc-sdk/26.5/nvhpc_2026_265_Linux_x86_64_cuda_13.2.tar.gz",
         ),
     },
