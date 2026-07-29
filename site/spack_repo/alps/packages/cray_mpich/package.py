@@ -143,7 +143,8 @@ class CrayMpich(MpichEnvironmentModifications, Package):
 
     depends_on("libfabric@1:", type="link")
 
-    depends_on("cray-pmi", type="link", when="@:9.1")
+    depends_on("cray-pmi", type="link")
+    depends_on("cray-pmi@6.1.18:", when="@9.2.0:")
     depends_on("cray-pmi@:6.1.15", when='@:8.1.32,=9.0.0')
     # cray-pmi@6.1.16 is linked to glibc from sles15sp6
     depends_on("cray-pmi@6.1.16:", when='@8.1.33,9.0.1:')
