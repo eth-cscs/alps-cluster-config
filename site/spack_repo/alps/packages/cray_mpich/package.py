@@ -14,7 +14,7 @@ from spack.package import *
 
 _versions = {
     "9.2.0": {
-        "Linux-aarch64": "17d86fa7e0452d03b4d0c81dbb0c5e4d4dcd8fc4fb851ef301229d05840ca649",
+        "Linux-aarch64": "ef70b7bc8ca40c5811fb4db24472294bcbb44fa24fabb6c0b94fca6de84f97ce",
     },
     "9.1.0": {
         "Linux-aarch64": "30419d03e0f03466a2cee15344596ef399aa704dea0b5b114445a10c6c1f3c74",
@@ -212,9 +212,9 @@ class CrayMpich(MpichEnvironmentModifications, Package):
         filter_file("@@PREFIX@@", self.prefix, self.prefix.bin.mpifort, string=True)
 
         if '@9.2:' in self.spec:
-            filter_file("@@PMIPREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicc, string=True)
-            filter_file("@@PMIPREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicxx, string=True)
-            filter_file("@@PMIPREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpifort, string=True)
+            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicc, string=True)
+            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicxx, string=True)
+            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpifort, string=True)
 
         # link with the relevant gtl lib
         if "+cuda" in self.spec:
