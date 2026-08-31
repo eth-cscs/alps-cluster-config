@@ -30,6 +30,8 @@ packages:
       prefix: /opt/cray/libfabric/1.22.0
     - spec: libfabric@1.15.2.0 fabrics=cxi,rxm,tcp,rxd,udp +cuda cuda_arch=90,90a
       prefix: /opt/cray/libfabric/1.15.2.0
+    #- spec: libfabric@2.3.1 fabrics=cxi,rxm,tcp,rxd,udp +cuda cuda_arch=90,90a
+    #  prefix: /opt/cray/libfabric/2.3.1
     prefer:
       - '@2.2:'
       - '+cuda'
@@ -38,16 +40,16 @@ packages:
   libcxi:
     buildable: false
     externals:
-    - spec: libcxi@12.0.2 +cuda
+    - spec: libcxi@13.1.0 +cuda
       prefix: /usr
   cxi-driver:
     buildable: false
     externals:
-    - spec: cxi-driver@12.0.2
+    - spec: cxi-driver@13.1.0
       prefix: /usr
   cassini-headers:
     buildable: false
     externals:
-    - spec: cassini-headers@12.0.2
+    - spec: cassini-headers@13.1.0
       prefix: /usr
 
