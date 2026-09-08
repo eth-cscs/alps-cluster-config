@@ -77,6 +77,8 @@ class CrayPmi(Package):
     # Fix up binaries with patchelf.
     depends_on("patchelf", type="build")
 
+    depends_on("openssl@3", type="link", when="@6.1.18:")
+
     depends_on("cray-pals@1.3.2", type="link", when="@6.1.13:")
     depends_on("cray-pals@1.2.12", type="link", when="@6.1.11:6.1.12")
     depends_on("cray-pals@1.2.11", type="link", when="@6.1.10")
