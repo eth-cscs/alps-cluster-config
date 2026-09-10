@@ -24,12 +24,14 @@ packages:
   libfabric:
     buildable: true
     externals:
-    - spec: libfabric@1.22.0 fabrics=cxi,rxm,tcp,rxd,udp,shm
+    - spec: libfabric@1.22.0   fabrics=cxi,rxm,tcp,rxd,udp,shm
       prefix: /opt/cray/libfabric/1.22.0/
     - spec: libfabric@1.15.2.0 fabrics=cxi,rxm,tcp,rxd,udp
       prefix: /opt/cray/libfabric/1.15.2.0/
+    - spec: libfabric@2.3.1    fabrics=cxi,rxm,tcp,rxd,udp,shm
+      prefix: /opt/cray/libfabric/2.3.1/
     prefer:
-      - '@2.2:'
+      - '@2.3.1'
     require: fabrics=cxi,rxm,tcp
   libcxi:
     buildable: false
