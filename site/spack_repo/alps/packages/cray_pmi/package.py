@@ -87,6 +87,7 @@ class CrayPmi(Package):
     depends_on("cray-pals@1.2.5", type="link", when="@6.1.8")
     depends_on("cray-pals@1.2.4", type="link", when="@6.1.7")
     depends_on("cray-pals@1.2.0", type="link", when="@6.0.17")
+    depends_on("openssl@3:", type="link", when="@6.1.18:")
 
     def get_rpaths(self):
         # Those rpaths are already set in the build environment, so
