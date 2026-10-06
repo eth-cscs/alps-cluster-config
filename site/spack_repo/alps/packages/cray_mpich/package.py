@@ -134,7 +134,8 @@ class CrayMpich(MpichEnvironmentModifications, Package):
         "9.0.0",
         "8.1.33",
         "9.0.1",
-        "9.1.0"
+        "9.1.0",
+        "9.2.1"
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
@@ -144,6 +145,7 @@ class CrayMpich(MpichEnvironmentModifications, Package):
     depends_on("libfabric@1:", type="link")
 
     depends_on("cray-pmi", type="link")
+    depends_on("cray-pmi@6.1.18:", when="@9.2.0:")
     depends_on("cray-pmi@:6.1.15", when='@:8.1.32,=9.0.0')
     # cray-pmi@6.1.16 is linked to glibc from sles15sp6
     depends_on("cray-pmi@6.1.16:", when='@8.1.33,9.0.1:')
@@ -209,6 +211,15 @@ class CrayMpich(MpichEnvironmentModifications, Package):
         filter_file("@@PREFIX@@", self.prefix, self.prefix.bin.mpicc, string=True)
         filter_file("@@PREFIX@@", self.prefix, self.prefix.bin.mpicxx, string=True)
         filter_file("@@PREFIX@@", self.prefix, self.prefix.bin.mpifort, string=True)
+
+        if '@9.2:' in self.spec:
+            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicc, string=True)
+            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicxx, string=True)
+            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpifort, string=True)
+
+            filter_file("@@LIBFABRIC_LIB_PREFIX@@", self.spec['libfabric'].prefix.lib, self.prefix.bin.mpicc, string=True)
+            filter_file("@@LIBFABRIC_LIB_PREFIX@@", self.spec['libfabric'].prefix.lib, self.prefix.bin.mpicxx, string=True)
+            filter_file("@@LIBFABRIC_LIB_PREFIX@@", self.spec['libfabric'].prefix.lib, self.prefix.bin.mpifort, string=True)
 
         # link with the relevant gtl lib
         if "+cuda" in self.spec:
