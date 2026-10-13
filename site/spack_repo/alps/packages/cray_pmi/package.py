@@ -113,7 +113,7 @@ class CrayPmi(Package):
 
     @property
     def libs(self):
-        return find_libraries(["libmpi", "libpmi2"], root=self.prefix, shared=True)
+        return find_libraries(["libpmi_cray"], root=self.prefix, shared=True)
 
     @run_after("install")
     def fixup_binaries(self):

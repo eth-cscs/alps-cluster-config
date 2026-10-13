@@ -14,7 +14,7 @@ from spack.package import *
 
 _versions = {
     "9.2.1": {
-        "Linux-aarch64": "6bdad56c1e0a98b3b66a0c797792ffff10d36dc458f27e1bac8a3980d92e6a2b",
+        "Linux-aarch64": "2bd6af9f531063d7886fdb91e8011b2f144f648ec585579be5c74437707e486b",
         "Linux-x86_64": "fefb7c7c0611180990aad15db743d5c5ea66436169970469294a32ce1694ea06",
     },
     "9.1.0": {
@@ -193,6 +193,8 @@ class CrayMpich(MpichEnvironmentModifications, Package):
                     continue
                 patchelf("--force-rpath", "--set-rpath", rpath, f, fail_on_error=False)
                 patchelf("--add-needed", "libxpmem.so", f, fail_on_error=False)
+                for l in self.spec["cray-pmi"].libs.names:
+                    patchelf("--add-needed", l, f, fail_on_error=True)
                 if "+cuda" in self.spec:
                     patchelf(
                         "--add-needed", "libmpi_gtl_cuda.so", f, fail_on_error=False
