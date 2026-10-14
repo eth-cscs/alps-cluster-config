@@ -13,6 +13,10 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "9.2.1": {
+        "Linux-aarch64": "efeb6c7772a81884c7661b77b0512189f8583b6f8d84b0932890f76d0de574b1",
+        "Linux-x86_64": "f3f805c81e9455249a0cd6ffb10e42f76a4d075f1e851b5fc18a06532b910410",
+    },
     "9.1.0": {
         "Linux-aarch64": "30419d03e0f03466a2cee15344596ef399aa704dea0b5b114445a10c6c1f3c74",
         "Linux-x86_64": "b9878c042a09a56b76dd76cc3ee8147f4c12c9a56220e0b747a804f9cc18f862",
@@ -130,7 +134,8 @@ class CrayMpich(MpichEnvironmentModifications, Package):
         "9.0.0",
         "8.1.33",
         "9.0.1",
-        "9.1.0"
+        "9.1.0",
+        "9.2.1"
     ]:
         with when("+cuda"):
             depends_on(f"cray-gtl@{ver} +cuda", type="link", when="@" + ver)
@@ -143,6 +148,7 @@ class CrayMpich(MpichEnvironmentModifications, Package):
     depends_on("cray-pmi@:6.1.15", when='@:8.1.32,=9.0.0')
     # cray-pmi@6.1.16 is linked to glibc from sles15sp6
     depends_on("cray-pmi@6.1.16:", when='@8.1.33,9.0.1:')
+    depends_on("cray-pmi@6.1.18:", when="@9.2.0:")
     depends_on("xpmem", type="link")
 
     conflicts("%gcc@:7")
@@ -187,6 +193,8 @@ class CrayMpich(MpichEnvironmentModifications, Package):
                     continue
                 patchelf("--force-rpath", "--set-rpath", rpath, f, fail_on_error=False)
                 patchelf("--add-needed", "libxpmem.so", f, fail_on_error=False)
+                for l in self.spec["cray-pmi"].libs.names:
+                    patchelf("--add-needed", l, f, fail_on_error=True)
                 if "+cuda" in self.spec:
                     patchelf(
                         "--add-needed", "libmpi_gtl_cuda.so", f, fail_on_error=False

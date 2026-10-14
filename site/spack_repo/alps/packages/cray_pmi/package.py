@@ -12,6 +12,10 @@ import spack.compilers
 from spack.package import *
 
 _versions = {
+    "6.1.18": {
+        "Linux-aarch64": "9238c97d823e23a7035b9d83f0275a63809fab33ec7efa378960ed46ebd69731",
+        "Linux-x86_64": "97f3bbf264aea86275609c4f35b60156f345fd1dfeea4461f3f74fc16a0debb0"
+    },
     "6.1.17": {
         "Linux-aarch64": "2a14a9b1c5e6319c2a513826bbe461a768a6387ea20555f4ae3963c3081f0568",
         "Linux-x86_64": "ccc893996686256daf02323d929e2077fd787187717c2615fdf78eb66f494657",
@@ -44,7 +48,7 @@ _versions = {
         "Linux-x86_64": "8fd4194c6c5167f8b81b1cf9b76341669e40d647d0caecef287be6f0f5d95290"
     },
     "6.1.8": {
-        "Linux-x86_64": "6c7e5d3038e26b9d0e82428b25b570d00401a6fc9f2fd3c008f15a253a8e2305"
+        "Linux-x86_64": "97f3bbf264aea86275609c4f35b60156f345fd1dfeea4461f3f74fc16a0debb0"
     },
     "6.1.7": {
         "Linux-x86_64": "574b21bd6f8970521c2bc4f096aced896fec8b749f854272cc7bbb7130ae92d8"
@@ -84,6 +88,7 @@ class CrayPmi(Package):
     depends_on("cray-pals@1.2.5", type="link", when="@6.1.8")
     depends_on("cray-pals@1.2.4", type="link", when="@6.1.7")
     depends_on("cray-pals@1.2.0", type="link", when="@6.0.17")
+    depends_on("openssl@3:", type="link", when="@6.1.18:")
 
     def get_rpaths(self):
         # Those rpaths are already set in the build environment, so
@@ -108,7 +113,7 @@ class CrayPmi(Package):
 
     @property
     def libs(self):
-        return find_libraries(["libmpi", "libpmi2"], root=self.prefix, shared=True)
+        return find_libraries(["libpmi_cray"], root=self.prefix, shared=True)
 
     @run_after("install")
     def fixup_binaries(self):
