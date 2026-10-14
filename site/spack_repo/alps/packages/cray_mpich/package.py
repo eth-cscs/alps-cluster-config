@@ -214,15 +214,6 @@ class CrayMpich(MpichEnvironmentModifications, Package):
         filter_file("@@PREFIX@@", self.prefix, self.prefix.bin.mpicxx, string=True)
         filter_file("@@PREFIX@@", self.prefix, self.prefix.bin.mpifort, string=True)
 
-        if '@9.2:' in self.spec:
-            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicc, string=True)
-            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpicxx, string=True)
-            filter_file("@@PMI_LIB_PREFIX@@", self.spec['cray-pmi'].prefix.lib, self.prefix.bin.mpifort, string=True)
-
-            filter_file("@@LIBFABRIC_LIB_PREFIX@@", self.spec['libfabric'].prefix.lib, self.prefix.bin.mpicc, string=True)
-            filter_file("@@LIBFABRIC_LIB_PREFIX@@", self.spec['libfabric'].prefix.lib, self.prefix.bin.mpicxx, string=True)
-            filter_file("@@LIBFABRIC_LIB_PREFIX@@", self.spec['libfabric'].prefix.lib, self.prefix.bin.mpifort, string=True)
-
         # link with the relevant gtl lib
         if "+cuda" in self.spec:
             lpath = self.spec["cray-gtl"].prefix.lib
