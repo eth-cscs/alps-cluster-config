@@ -25,12 +25,12 @@ from spack.package import *
 _versions = {
     "26.9": {
         "Linux-aarch64": (
-            "f4ef231f4bb3f4709e1e0ac6c547cbbd8893bfd9297aa4639a57f63f9f7e22a3",
-            "https://developer.download.nvidia.com/hpc-sdk/26.9/nvhpc_2026_269_Linux_aarch64_cuda_multi.tar.gz",
+            "acf0d8ea9fc1b5457b16481b1067c742e6610989865e18be93e383d9ded37e2a",
+            "https://developer.download.nvidia.com/hpc-sdk/26.9/nvhpc_2026_269_Linux_aarch64_cuda_13.3.tar.gz",
         ),
         "Linux-x86_64": (
-            "d77c7a8f0798a53c10a5c9bea5c5ce8100502059eef93fa13b557c40c10e3129",
-            "https://developer.download.nvidia.com/hpc-sdk/26.9/nvhpc_2026_269_Linux_x86_64_cuda_multi.tar.gz",
+            "7a534c3a73bd8ff197dd510aa6b98fdc3669ef83d8b2bdc6d6bc731e1e91eba1",
+            "https://developer.download.nvidia.com/hpc-sdk/26.9/nvhpc_2026_269_Linux_x86_64_cuda_13.3.tar.gz",
         ),
     },
     "26.5": {
