@@ -45,18 +45,18 @@ class Nvshmem(MakefilePackage, CMakePackage, CudaPackage):
     )
 
     variant("cuda", default=True, description="Build with CUDA")
-    variant("ucx", default=True, description="Build with UCX support")
+    variant("ucx", default=False, description="Build with UCX support")
     variant("nccl", default=True, description="Build with NCCL support")
     variant("gdrcopy", default=True, description="Build with gdrcopy support")
     variant("mpi", default=True, description="Build with MPI support")
     variant("shmem", default=False, description="Build with shmem support")
     variant(
         "gpu_initiated_support",
-        default=False,
+        default=True,
         when="@2.6:",
         description="Build with support for GPU initiated communication",
     )
-    variant("libfabric", default=False, description="Build with Libfabric support")
+    variant("libfabric", default=True, description="Build with Libfabric support")
 
     variant("python", default=False, description="Build/install nvshmem4py (Python bindings)")
     variant("mpi4py", default=True, when="+python+mpi", description="Install mpi4py runtime dep")
